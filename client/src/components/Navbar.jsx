@@ -48,7 +48,7 @@ const Navbar = () => {
   };
 
   const navItems = [
-    { name: "My Profile", path: "/profile" },
+    { name: "My Profile", path: "/myprofil" },
     { name: "Support & Assistance", path: "/reclamation" },
     { name: "About", path: "/about" },
     { name: "Verify", action: sendVerificationOtp, condition: !userData?.isAccountVerified },

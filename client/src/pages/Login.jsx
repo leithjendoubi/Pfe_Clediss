@@ -7,41 +7,46 @@ import { toast } from "react-toastify";
 
 const Login = () => {
   const navigate = useNavigate();
-
-  const { backendUrl, setIsLoggedin, getUserData , userData} = useContext(AppContext);
-
+  const { backendUrl, setIsLoggedin, getUserData ,userData } = useContext(AppContext);
   const [state, setState] = useState("Sign Up");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [isLoading, setIsLoading] = useState(false);
 
   const sendVerificationOtp = async () => {
     try {
       axios.defaults.withCredentials = true;
-      const { data } = await axios.post(
-        backendUrl + "/api/auth/send-verify-otp"
-      );
-
-      if (data.success) {
-        navigate("/email-verify");
-        toast.success(data.message);
-      } else {
-        toast.error(data.message);
-      }
+      const { data } = await axios.post(backendUrl + "/api/auth/send-verify-otp");
+      return data;
     } catch (error) {
-      toast.error(error.message);
+      throw error;
     }
   };
 
-
+  const handleVerificationProcess = async () => {
+    setIsLoading(true);
+    try {
+      const otpResponse = await sendVerificationOtp();
+      if (otpResponse.success) {
+        navigate("/email-verify");
+        toast.success(otpResponse.message);
+      } else {
+        toast.error(otpResponse.message);
+      }
+    } catch (error) {
+      toast.error(error.message || "Failed to send verification OTP");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const onSubmitHandler = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    axios.defaults.withCredentials = true;
+
     try {
-      e.preventDefault();
-
-      axios.defaults.withCredentials = true;
-
       if (state === "Sign Up") {
         const { data } = await axios.post(backendUrl + "/api/auth/register", {
           name,
@@ -51,10 +56,8 @@ const Login = () => {
 
         if (data.success) {
           setIsLoggedin(true);
-          getUserData();
-          console.log("hi");
-          console.log(getUserData()+"hi");
-          navigate("/Home");
+          await getUserData();
+          await handleVerificationProcess(); // Send OTP and redirect
         } else {
           toast.error(data.message);
         }
@@ -66,16 +69,21 @@ const Login = () => {
 
         if (data.success) {
           setIsLoggedin(true);
-          console.log("hi");
-          getUserData();
-          console.log(getUserData());
-          navigate("/Home");
+         getUserData();
+
+          if (userData && !userData.isAccountVerified) {
+            await handleVerificationProcess();
+          } else {
+            navigate("/Home");
+          }
         } else {
           toast.error(data.message);
         }
       }
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -142,8 +150,12 @@ const Login = () => {
             Forgot password?
           </p>
 
-          <button className="w-full py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-900 text-white font-medium">
-            {state}
+          <button
+            type="submit"
+            className="w-full py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-900 text-white font-medium"
+            disabled={isLoading}
+          >
+            {isLoading ? "Processing..." : state}
           </button>
         </form>
 

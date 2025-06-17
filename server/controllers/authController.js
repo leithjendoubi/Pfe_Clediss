@@ -5,8 +5,10 @@ import transporter from "../config/nodemailer.js";
 import {
   EMAIL_VERIFY_TEMPLATE,
   PASSWORD_RESET_TEMPLATE,
+  WELCOME_TEMPLATE,
 } from "../config/emailTemplates.js";
-
+import { v2 as cloudinary } from 'cloudinary';
+import fs from 'fs';
 
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1d" });
@@ -41,12 +43,22 @@ export const register = async (req, res) => {
     });
 
     // Sending welcome email
-    const mailOptions = {
-      from: process.env.SENDER_EMAIL,
-      to: email,
-      subject: "Welcome to Firma",
-      text: `Welcome to elyséedev website. Your account has been created with email id: ${email}`,
-    };
+const mailOptions = {
+  from: process.env.SENDER_EMAIL,
+  to: email,
+  subject: "Welcome to Firma",
+  html: WELCOME_TEMPLATE
+    .replace("{{email}}", email)
+    .replace("{{name}}", name),
+  attachments: [
+    {
+      filename: 'logo.png',
+      path: 'C:/Users/leith/Desktop/firma/server/config/logo.png',
+      cid: 'logo'
+    }
+  ]
+};
+
 
     await transporter.sendMail(mailOptions);
 
@@ -115,6 +127,10 @@ export const sendVerifyOtp = async (req, res) => {
 
     const user = await userModel.findById(userId);
 
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
     if (user.isAccountVerified) {
       return res.json({ success: false, message: "Account already verified" });
     }
@@ -130,20 +146,25 @@ export const sendVerifyOtp = async (req, res) => {
       from: process.env.SENDER_EMAIL,
       to: user.email,
       subject: "Account Verification OTP",
-      // text: `Your OTP is ${otp}. Verify your account using this OTP.`,
-      html: EMAIL_VERIFY_TEMPLATE.replace("{{otp}}", otp).replace(
-        "{{email}}",
-        user.email
-      ),
+      html: EMAIL_VERIFY_TEMPLATE.replace("{{otp}}", otp).replace("{{email}}", user.email),
+      attachments: [
+        {
+          filename: 'logo.png',
+          path: 'C:/Users/leith/Desktop/firma/server/config/logo.png',
+          cid: 'logo'
+        }
+      ]
     };
 
     await transporter.sendMail(mailOptions);
 
-    res.json({ success: true, message: "Verification OTP sent to your email" });
+    return res.json({ success: true, message: "Verification OTP sent to your email" });
+
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    return res.json({ success: false, message: error.message });
   }
 };
+
 
 // Verify the Email using the OTP
 export const verifyEmail = async (req, res) => {
@@ -217,16 +238,19 @@ export const sendResetOtp = async (req, res) => {
 
     await user.save();
 
-    const mailOptions = {
-      from: process.env.SENDER_EMAIL,
-      to: user.email,
-      subject: "Password Reset OTP",
-      // text: `Your OTP for resetting your password is ${otp}. Use this OTP to proceed with resetting your password.`,
-      html: PASSWORD_RESET_TEMPLATE.replace("{{otp}}", otp).replace(
-        "{{email}}",
-        user.email
-      ),
-    };
+const mailOptions = {
+  from: process.env.SENDER_EMAIL,
+  to: user.email,
+  subject: "Password Reset OTP",
+  html: PASSWORD_RESET_TEMPLATE.replace("{{otp}}", otp).replace("{{email}}", user.email),
+  attachments: [
+    {
+      filename: 'logo.png',
+      path: 'C:/Users/leith/Desktop/firma/server/config/logo.png',
+      cid: 'logo' // same as in the img src="cid:logo"
+    }
+  ]
+};
 
     await transporter.sendMail(mailOptions);
 
@@ -276,5 +300,111 @@ export const resetPassword = async (req, res) => {
     });
   } catch (error) {
     return res.json({ success: false, message: error.message });
+  }
+};
+export const addPhoto = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    if (!req.file) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "No photo uploaded" 
+      });
+    }
+
+    // Validate user exists
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "User not found" 
+      });
+    }
+
+    // Delete old photo if exists
+    if (user.image) {
+      const publicId = user.image.split('/').pop().split('.')[0];
+      await cloudinary.uploader.destroy(`user_photos/${publicId}`);
+    }
+
+    // Upload new photo to Cloudinary
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      folder: "user_photos",
+      width: 500,
+      height: 500,
+      crop: "fill"
+    });
+
+    // Update user with new photo URL
+    user.image = result.secure_url;
+    await user.save();
+
+    // Delete temporary file
+    fs.unlinkSync(req.file.path);
+
+    return res.status(200).json({ 
+      success: true, 
+      imageUrl: result.secure_url 
+    });
+
+  } catch (error) {
+    // Clean up if error occurs
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+    return res.status(500).json({ 
+      success: false, 
+      message: error.message 
+    });
+  }
+};
+
+export const loginAdmin = async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.json({
+      success: false,
+      message: "Email and Password are required",
+    });
+  }
+
+  try {
+    // Check if credentials match the admin credentials from .env
+    if (
+      email !== process.env.ADMIN_EMAIL || 
+      password !== process.env.ADMIN_PASSWORD
+    ) {
+      return res.json({ 
+        success: false, 
+        message: "Invalid admin credentials" 
+      });
+    }
+
+    // Create a token (you might want to create a separate admin token)
+    const token = jwt.sign(
+      { id: "admin", isAdmin: true }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: "1d" }
+    );
+
+    res.cookie("adminToken", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.json({ 
+      success: true, 
+      message: "Admin login successful" 
+    });
+
+  } catch (error) {
+    return res.json({ 
+      success: false, 
+      message: error.message 
+    });
   }
 };

@@ -20,6 +20,13 @@ const AddOrder = () => {
     centrePickup: '',
     paymentMethod: '',
   });
+    const openMapDialog = () => {
+    setIsMapOpen(true);
+  };
+
+  const closeMapDialog = () => {
+    setIsMapOpen(false);
+  };
 
   useEffect(() => {
     const fetchCartData = async () => {

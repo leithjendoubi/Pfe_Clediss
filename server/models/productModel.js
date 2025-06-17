@@ -8,6 +8,8 @@ const productSchema = new mongoose.Schema({
   category: { type: String, required: true },
   subCategory: { type: String, required: true },
   sizes: { type: Array, required: true },
+  poidnet: { type: Array, required: false },
+  availablepoids: { type: Array, required: false },
   bestseller: { type: Boolean },
   date: { type: Date, default: Date.now },
   userId: { type: String, required: true },

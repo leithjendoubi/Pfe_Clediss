@@ -1,220 +1,114 @@
 export const EMAIL_VERIFY_TEMPLATE = `
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" style="margin:0; padding:0; background: #b4d4ff;">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Verify Your Account</title>
+  </head>
+  <body style="margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: linear-gradient(to bottom right, #b4d4ff, #86b6f6);">
+    <div style="max-width: 600px; margin: 40px auto; background-color: #0f172a; border-radius: 12px; padding: 30px; color: #ffffff; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
+      <div style="margin-bottom: 20px;">
+        <img src="cid:logo" alt="فيرمة" width="60" height="60" style="border-radius: 50%;" />
+        <h2 style="font-weight: 600; margin: 10px 0; color: white;">فيرمة</h2>
+      </div>
 
-<head>
-  <title>Email Verify</title>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet" type="text/css">
-  <style type="text/css">
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Open Sans', sans-serif;
-      background: #E5E5E5;
-    }
+      <h1 style="font-size: 24px; margin-bottom: 10px;">Verify Your Account</h1>
+      <p style="font-size: 16px; color: #cbd5e1;">Hello <strong>{{email}}</strong>,</p>
+      <p style="font-size: 15px; color: #cbd5e1;">Use the OTP below to verify your account:</p>
 
-    table, td {
-      border-collapse: collapse;
-    }
+      <div style="margin: 25px auto; display: inline-block; padding: 16px 32px; background: linear-gradient(to right, #5a4fcf, #6e52ff); color: #fff; font-size: 22px; font-weight: bold; border-radius: 8px; letter-spacing: 4px;">
+        {{otp}}
+      </div>
 
-    .container {
-      width: 100%;
-      max-width: 500px;
-      margin: 70px 0px;
-      background-color: #ffffff;
-    }
+      <p style="font-size: 14px; margin-top: 20px; color: #cbd5e1;">
+        This OTP is valid for 24 hours. If you did not sign up for an account, please ignore this message.
+      </p>
+    </div>
 
-    .main-content {
-      padding: 48px 30px 40px;
-      color: #000000;
-    }
-
-    .button {
-      width: 100%;
-      background:rgb(34, 69, 209);
-      text-decoration: none;
-      display: inline-block;
-      padding: 10px 0;
-      color: #fff;
-      font-size: 14px;
-      text-align: center;
-      font-weight: bold;
-      border-radius: 7px;
-    }
-
-    @media only screen and (max-width: 480px) {
-      .container {
-        width: 80% !important;
-      }
-
-      .button {
-        width: 50% !important;
-      }
-    }
-  </style>
-</head>
-
-<body>
-  <table width="100%" cellspacing="0" cellpadding="0" border="0" align="center" bgcolor="#F6FAFB">
-    <tbody>
-      <tr>
-        <td valign="top" align="center">
-          <table class="container" width="600" cellspacing="0" cellpadding="0" border="0">
-            <tbody>
-              <tr>
-                <td class="main-content">
-                  <table width="100%" cellspacing="0" cellpadding="0" border="0">
-                    <tbody>
-                      <tr>
-                        <td style="padding: 0 0 24px; font-size: 18px; line-height: 150%; font-weight: bold;">
-                          Verify your email
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 0 0 10px; font-size: 14px; line-height: 150%;">
-                          You are just one step away to verify your account for this email: <span style="color: #4C83EE;">{{email}}</span>.
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 0 0 16px; font-size: 14px; line-height: 150%; font-weight: 700;">
-                          Use below OTP to verify your account.
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 0 0 24px;">
-                          <p class="button" >{{otp}}</p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 0 0 10px; font-size: 14px; line-height: 150%;">
-                          This OTP is valid for 24 hours.
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</body>
+    <div style="text-align: center; font-size: 12px; margin-top: 20px; color: #64748b;">
+      &copy; ${new Date().getFullYear()} Firma. All rights reserved.
+    </div>
+  </body>
 </html>
+`;
 
-`
 
 export const PASSWORD_RESET_TEMPLATE = `
-
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" style="margin:0; padding:0; background: #b4d4ff;">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Reset Password OTP</title>
+  </head>
+  <body style="margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: linear-gradient(to bottom right, #b4d4ff, #86b6f6);">
+    <div style="max-width: 600px; margin: 40px auto; background-color: #0f172a; border-radius: 12px; padding: 30px; color: #ffffff; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
+      <div style="margin-bottom: 20px;">
+        <img src="cid:logo" alt="فيرمة" width="60" height="60" style="border-radius: 50%;" />
+        <h2 style="font-weight: 600; margin: 10px 0; color: white;">فيرمة</h2>
+      </div>
 
-<head>
-  <title>Password Reset</title>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet" type="text/css">
-  <style type="text/css">
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Open Sans', sans-serif;
-      background: #E5E5E5;
-    }
+      <h1 style="font-size: 24px; margin-bottom: 10px;">Reset Password</h1>
+      <p style="font-size: 16px; color: #cbd5e1;">Hello <strong>{{email}}</strong>,</p>
+      <p style="font-size: 15px; color: #cbd5e1;">Use the OTP below to reset your password:</p>
 
-    table, td {
-      border-collapse: collapse;
-    }
+      <div style="margin: 25px auto; display: inline-block; padding: 16px 32px; background: linear-gradient(to right, #5a4fcf, #6e52ff); color: #fff; font-size: 22px; font-weight: bold; border-radius: 8px; letter-spacing: 4px;">
+        {{otp}}
+      </div>
 
-    .container {
-      width: 100%;
-      max-width: 500px;
-      margin: 70px 0px;
-      background-color: #ffffff;
-    }
+      <p style="font-size: 14px; margin-top: 20px; color: #cbd5e1;">
+        This OTP is valid for 15 minutes. If you didn't request a reset, please ignore this message.
+      </p>
+    </div>
 
-    .main-content {
-      padding: 48px 30px 40px;
-      color: #000000;
-    }
-
-    .button {
-      width: 100%;
-      background:rgb(34, 145, 209);
-      text-decoration: none;
-      display: inline-block;
-      padding: 10px 0;
-      color: #fff;
-      font-size: 14px;
-      text-align: center;
-      font-weight: bold;
-      border-radius: 7px;
-    }
-
-    @media only screen and (max-width: 480px) {
-      .container {
-        width: 80% !important;
-      }
-
-      .button {
-        width: 50% !important;
-      }
-    }
-  </style>
-</head>
-
-<body>
-  <table width="100%" cellspacing="0" cellpadding="0" border="0" align="center" bgcolor="#F6FAFB">
-    <tbody>
-      <tr>
-        <td valign="top" align="center">
-          <table class="container" width="600" cellspacing="0" cellpadding="0" border="0">
-            <tbody>
-              <tr>
-                <td class="main-content">
-                  <table width="100%" cellspacing="0" cellpadding="0" border="0">
-                    <tbody>
-                      <tr>
-                        <td style="padding: 0 0 24px; font-size: 18px; line-height: 150%; font-weight: bold;">
-                          Forgot your password?
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 0 0 10px; font-size: 14px; line-height: 150%;">
-                          We received a password reset request for your account: <span style="color: #4C83EE;">{{email}}</span>.
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 0 0 16px; font-size: 14px; line-height: 150%; font-weight: 700;">
-                          Use the OTP below to reset the password.
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 0 0 24px;">
-                          <p class="button" >{{otp}}</p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 0 0 10px; font-size: 14px; line-height: 150%;">
-                          The password reset otp is only valid for the next 15 minutes.
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</body>
+    <div style="text-align: center; font-size: 12px; margin-top: 20px; color: #64748b;">
+      &copy; ${new Date().getFullYear()} Firma. All rights reserved.
+    </div>
+  </body>
 </html>
-`
+`;
+
+
+export const WELCOME_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="en" style="margin:0; padding:0;">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Welcome to Firma</title>
+    <style>
+      @keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(-20px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+    </style>
+  </head>
+  <body style="margin:0; padding:0; font-family: 'Segoe UI', sans-serif; background: linear-gradient(to bottom right, #b4d4ff, #86b6f6);">
+    <div style="max-width:600px; margin:40px auto; background-color:#0f172a; border-radius:12px; padding:30px; color:#ffffff; text-align:center; animation: fadeIn 1s ease-in-out;">
+      
+      <div style="margin-bottom: 20px;">
+        <img src="cid:logo" alt="فيرمة Logo" width="60" height="60" style="border-radius: 50%;" />
+        <h2 style="font-weight: 600; margin: 10px 0; color: white;">فيرمة</h2>
+      </div>
+
+      <h1 style="font-size:24px; margin-bottom:10px;">Welcome to Firma, {{name}}!</h1>
+      
+      <p style="font-size:16px; color: #cbd5e1;">We're excited to have you onboard 🎉</p>
+
+      <p style="font-size:15px; color:#cbd5e1; margin-top:20px;">
+        Welcome to elyséedev website. Your account has been created with email id:
+      </p>
+      <p style="font-size:17px; font-weight:bold; color:#ffffff; margin-top:5px;">{{email}}</p>
+
+      <div style="margin-top:30px;">
+        <a href="https://www.firma.tn" target="_blank" style="display:inline-block; padding:12px 24px; background:linear-gradient(to right,#5a4fcf,#6e52ff); color:#fff; border-radius:8px; text-decoration:none; font-weight:bold;">
+          Get Started
+        </a>
+      </div>
+    </div>
+
+    <div style="text-align:center; font-size:12px; margin-top:20px; color:#64748b;">
+      &copy; ${new Date().getFullYear()} Firma. All rights reserved.
+    </div>
+  </body>
+</html>
+`;
 

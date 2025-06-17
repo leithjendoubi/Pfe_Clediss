@@ -16,6 +16,10 @@ const mapSchema = new mongoose.Schema({
   orderAddress: {
     orderId: { type: mongoose.Schema.Types.ObjectId, ref: "Order" },
     coordinates: { type: [Number], default: [] }
+  },
+  stockAddress: {
+    stockId: { type: mongoose.Schema.Types.ObjectId, ref: "Stock" },
+    coordinates: { type: [Number], default: [] }
   }
 });
 

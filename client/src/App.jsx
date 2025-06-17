@@ -20,7 +20,7 @@ import DemandProducteur from "./pages/demands/demandproducteur";
 import DemandVendeur from "./pages/demands/demandevendeur";
 import Home1 from "./pages/Home1";
 import Map from "./pages/Map";
-
+import MyProfil from "./pages/MyProfil";
 
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -37,6 +37,7 @@ const App = () => {
         <Route path="/map" element={<Map/>}/>
         <Route path="/login" element={<Login />} />
         <Route path="/home1" element={<Home1 />} />
+        <Route path="myprofil" element={<MyProfil/>}/>
         <Route path="/" element={<Home1 />} />
         <Route path="/demandproducteur" element={<DemandProducteur />} />
         <Route path="/demandvendeur" element={<DemandVendeur />} />                 

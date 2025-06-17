@@ -51,7 +51,7 @@ const EmailVerify = () => {
       if (data.success) {
         toast.success(data.message);
         getUserData();
-        navigate("/");
+        navigate("/Home");
       } else {
         toast.error(data.message);
       }
@@ -61,16 +61,16 @@ const EmailVerify = () => {
   };
 
   useEffect(() => {
-    isLoggedin && userData && userData.isAccountVerified && navigate("/");
+    isLoggedin && userData && userData.isAccountVerified && navigate("/Home");
   }, [isLoggedin, userData]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-200 to-purple-400">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-200 to-blue-400">
       <img
-        onClick={() => navigate("/")}
-        src={assets.logo}
+        onClick={() => navigate("/Home1")}
+        src={assets.elfirma}
         alt="logo"
-        className="absolute left-5 sm:left-20 top-5 w-28 sm:w-32 cursor-pointer"
+        className="absolute left-5 sm:left-20 top-5 w-50 sm:w-60 cursor-pointer"
       />
       <form
         onSubmit={onSubmitHandler}
