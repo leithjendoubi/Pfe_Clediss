@@ -10,11 +10,9 @@ const productSchema = new mongoose.Schema({
   sizes: { type: Array, required: true },
   poidnet: { type: Array, required: false },
   availablepoids: { type: Array, required: false },
-  bestseller: { type: Boolean },
   date: { type: Date, default: Date.now },
   userId: { type: String, required: true },
-
-  
+  marcheID: { type: String, default: "aucun marche" },
 });
 
 const productModel =

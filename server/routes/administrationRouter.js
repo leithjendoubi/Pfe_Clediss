@@ -7,7 +7,9 @@ import {
   getProduits,
   getProduitTarifsParkillo,
   getTypeDesVendeurs,
-  getTypeDesProducteurs
+  getTypeDesProducteurs,
+  getAdministrationHistory,
+  getProduitParCategorie
 } from '../controllers/administrationController.js';
 
 const administrationrouter = express.Router();
@@ -15,12 +17,13 @@ const administrationrouter = express.Router();
 // Get the newest administration record
 administrationrouter.get('/', getNewestAdministration);
 
+administrationrouter.get('/history', getAdministrationHistory);
 // Update administration record
 administrationrouter.post('/', updateAdministration);
 
 // Get typeMarche
 administrationrouter.get('/type-marche', getTypeMarche);
-
+administrationrouter.post('/produitparcategorie', getProduitParCategorie);
 // Get categorieProduitMarche
 administrationrouter.get('/categories-produits', getCategorieProduitMarche);
 

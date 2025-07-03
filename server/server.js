@@ -16,6 +16,7 @@ import marcheRouter from "./routes/marcheRouter.js";
 import producteurRouter from "./routes/producteurRouter.js";
 import vendeurRouter from "./routes/vendeurRouter.js";
 import maprouter from "./routes/mapRouter.js";
+import offrerouter from "./routes/offreRoute.js";
 
 
 
@@ -25,6 +26,7 @@ const port = process.env.PORT || 4000;
 // Middleware
 const allowedOrigins = [
   "http://localhost:5173",
+  "http://localhost:5174",
 ];
 app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json());
@@ -43,7 +45,7 @@ app.use("/api/administration", administrationrouter);
 app.use("/api/marche",marcheRouter);
 app.use("/api/producteur",producteurRouter);
 app.use("/api/vendeur",vendeurRouter);
-
+app.use("/api/offre",offrerouter);
 // Database connection and server startup
 const startServer = async () => {
   try {

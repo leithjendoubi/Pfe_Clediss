@@ -9,7 +9,7 @@ livreurRouter.get('/getall',getalllivreur);
 livreurRouter.get('/getaccepte',getlivreuraccepte);
 livreurRouter.post('/accept',acceptdemande);
 livreurRouter.get('/demande',getlivreurdemande);
-livreurRouter.post('/rejecct',rejectdemande);
+livreurRouter.post('/reject',rejectdemande);
 livreurRouter.get("/by-user/:userId", getLivreurByUserId);
 livreurRouter.patch("/update/:userId", updateLivreurProfile);
 

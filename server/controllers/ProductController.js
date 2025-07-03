@@ -1,19 +1,17 @@
 import { v2 as cloudinary } from "cloudinary";
 import productModel from "../models/productModel.js";
+import fs from "fs";
 
-
-
-// function for add product
+// Function to add a product
 export const createProduct = async (req, res) => {
   try {
-    const { name, description, price, category, subCategory, sizes, bestseller } = req.body;
-    const userId = req.body.userId;
+    const { name, description, price, category, subCategory, sizes, poidnet, availablepoids, marcheID, userId } = req.body;
 
     // Validate required fields
-    if (!name || !description || !price || !category || !subCategory || !sizes) {
+    if (!name || !description || !price || !category || !subCategory || !sizes || !userId) {
       return res.status(400).json({
         success: false,
-        message: "All fields are required except bestseller"
+        message: "All required fields must be provided"
       });
     }
 
@@ -21,27 +19,31 @@ export const createProduct = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({
         success: false,
-        message: "Product image is required"
+        message: "A product image is required"
       });
     }
 
     // Upload image to Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path, {
-      folder: "products" // Optional: organize images in a folder
+      folder: "products"
     });
+    // Clean up file after upload
+    fs.unlinkSync(req.file.path);
 
     const newProduct = new productModel({
       name,
       description,
       price,
-      image: {
+      image: [{
         public_id: result.public_id,
         url: result.secure_url
-      },
+      }],
       category,
       subCategory,
       sizes,
-      bestseller: bestseller || false,
+      poidnet: poidnet || [],
+      availablepoids: availablepoids || [],
+      marcheID: marcheID || "aucun marche",
       userId
     });
 
@@ -53,6 +55,10 @@ export const createProduct = async (req, res) => {
       product: savedProduct
     });
   } catch (error) {
+    // Clean up file if it exists
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
     res.status(500).json({
       success: false,
       message: error.message
@@ -141,10 +147,29 @@ export const updateProduct = async (req, res) => {
         message: "Unauthorized to update this product"
       });
     }
-    
+
+    // Handle image updates if new files are uploaded
+    let updatedData = { ...req.body };
+    if (req.file && req.files.length > 0) {
+      // Upload new images to Cloudinary
+      const imageUploads = await Promise.all(
+        req.file.map(async (file) => {
+          const result = await cloudinary.uploader.upload(file.path, {
+            folder: "products"
+          });
+          fs.unlinkSync(file.path);
+          return {
+            public_id: result.public_id,
+            url: result.secure_url
+          };
+        })
+      );
+      updatedData.image = imageUploads;
+    }
+
     const updatedProduct = await productModel.findByIdAndUpdate(
       productId,
-      { $set: req.body },
+      { $set: updatedData },
       { new: true }
     );
     
@@ -154,6 +179,12 @@ export const updateProduct = async (req, res) => {
       product: updatedProduct
     });
   } catch (error) {
+    // Clean up any remaining files
+    if (req.file) {
+      req.file.forEach(file => {
+        if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+      });
+    }
     res.status(500).json({
       success: false,
       message: error.message
@@ -183,6 +214,11 @@ export const deleteProduct = async (req, res) => {
         success: false,
         message: "Unauthorized to delete this product"
       });
+    }
+    
+    // Delete images from Cloudinary
+    for (const img of product.image) {
+      await cloudinary.uploader.destroy(img.public_id);
     }
     
     await productModel.findByIdAndDelete(productId);
@@ -216,10 +252,10 @@ export const getProductsByCategory = async (req, res) => {
   }
 };
 
-// Get bestseller products
-export const getBestsellerProducts = async (req, res) => {
+// Get products by marcheID
+export const getProductsByMarcheID = async (req, res) => {
   try {
-    const products = await productModel.find({ bestseller: true });
+    const products = await productModel.find({ marcheID: req.params.marcheID });
     
     res.status(200).json({
       success: true,

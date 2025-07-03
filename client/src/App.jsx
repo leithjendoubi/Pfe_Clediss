@@ -21,35 +21,44 @@ import DemandVendeur from "./pages/demands/demandevendeur";
 import Home1 from "./pages/Home1";
 import Map from "./pages/Map";
 import MyProfil from "./pages/MyProfil";
+import Sidebar from "./components/sidebar";
+import Navbar from "./components/Navbar";
+import Market from "./pages/Market";
 
-
+import ShowOrderToDeliver from "./pages/livraison/showordertodeliever";
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const App = () => {
   return (
-    <div>
+    <div className="app-container">
       <ToastContainer />
-      <Routes>
-        <Route path="/CreateProduct" element={<CreateProduct/>} />
-      <Route path='/product/:id' element={<Item/>} />
-      <Route path='/addorder' element ={<AddOrder/>}/>
-        <Route path="/Home" element={<Home />} />
-        <Route path="/treatdemand" element={<TreatDemand/>}/>
-        <Route path="/map" element={<Map/>}/>
-        <Route path="/login" element={<Login />} />
-        <Route path="/home1" element={<Home1 />} />
-        <Route path="myprofil" element={<MyProfil/>}/>
-        <Route path="/" element={<Home1 />} />
-        <Route path="/demandproducteur" element={<DemandProducteur />} />
-        <Route path="/demandvendeur" element={<DemandVendeur />} />                 
-        <Route path="/MarcheAdmin" element={<MarcheAdmin/>}/>
-        <Route path="/showmarcheadmin" element={<ShowMarchéAdmin/>}/>        
-        <Route path="/addlivreur"  element={<AddLivreur/>}/>
-        <Route path="/Marche" element={<Marche />} />        
-        <Route path="/Products" element={<Products />} />
-        <Route path="/CartPage" element={<CartPage />} />
-        <Route path="/email-verify" element={<EmailVerify />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-      </Routes>
+      
+      <main className="main-content">
+        <Routes>
+          <Route path="/CreateProduct" element={<CreateProduct/>} />
+          <Route path='/product/:id' element={<Item/>} />
+          <Route path='/addorder' element={<AddOrder/>}/>
+          <Route path="/Home" element={<Home />} />
+          <Route path="/market" element={<Market />} />
+          <Route path="/showorder" element={<ShowOrderToDeliver />} />
+          <Route path="/treatdemand" element={<TreatDemand/>}/>
+          <Route path="/map" element={<Map/>}/>
+          <Route path="/login" element={<Login />} />
+          <Route path="/home1" element={<Home1 />} />
+          <Route path="/myprofil" element={<MyProfil/>}/>
+          <Route path="/" element={<Home1 />} />
+          <Route path="/demandproducteur" element={<DemandProducteur />} />
+          <Route path="/demandvendeur" element={<DemandVendeur />} />                 
+          <Route path="/MarcheAdmin" element={<MarcheAdmin/>}/>
+          <Route path="/showmarcheadmin" element={<ShowMarchéAdmin/>}/>        
+          <Route path="/addlivreur" element={<AddLivreur/>}/>
+          <Route path="/Marche" element={<Marche />} />        
+          <Route path="/Products" element={<Products />} />
+          <Route path="/CartPage" element={<CartPage />} />
+          <Route path="/email-verify" element={<EmailVerify />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+        </Routes>
+      </main>
     </div>
   );
 };

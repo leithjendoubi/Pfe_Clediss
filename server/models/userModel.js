@@ -10,10 +10,7 @@ const userSchema = new mongoose.Schema({
   verifyOtpExpireAt: { type: Number, default: 0 },
   isAccountVerified: { type: Boolean, default: false },
   resetOtp: { type: String, default: "" },
-  resetOtpExpireAt: { type: Number, default: 0 },
-  isLivreur: { type: Boolean, default: false },
-  isVendeur: { type: Boolean, default: false },
-  isProducteur: { type: Boolean, default: false },      
+  resetOtpExpireAt: { type: Number, default: 0 },  
 });
 
 const userModel = mongoose.models.User || mongoose.model("User", userSchema);

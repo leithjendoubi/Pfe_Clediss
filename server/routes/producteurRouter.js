@@ -3,13 +3,12 @@ import {
   addProducteur,
   acceptStatutDemande,
   refusStatutDemande,
-  acceptStatutDemandeEngrais,
-  refusStatutDemandeEngrais,
-  acceptStatutDemandeVolaille,
-  refusStatutDemandeVolaille,
   userIsProducteur,
-  addDemandeEngrais,
-  addDemandeVolaille
+  getDemandProducteurs,
+  getDemandProducteursaccepted,
+  getProducteurDataByUserId,
+  deleteProducteur,
+  stopProducteur,
 } from "../controllers/producteurController.js";
 import upload from "../middleware/multer.js";
 
@@ -29,28 +28,22 @@ const producteurRouter = express.Router();
 // Add a new producteur
 producteurRouter.post("/", upload.fields(documentFields), addProducteur);
 
+producteurRouter.get("/demands", getDemandProducteurs);
+producteurRouter.get("/demandsaccepted", getDemandProducteursaccepted);
+
 // Accept producteur demande
 producteurRouter.put("/:producteurId/accept-demande", acceptStatutDemande);
-
+producteurRouter.put("/:producteurId/stop", stopProducteur);
 // Refuse producteur demande (with reason in body)
 producteurRouter.put("/:producteurId/refuse-demande", refusStatutDemande);
 
 // Accept engrais demande
-producteurRouter.put("/:producteurId/accept-engrais", acceptStatutDemandeEngrais);
 
-// Refuse engrais demande (with reason in body)
-producteurRouter.put("/:producteurId/refuse-engrais", refusStatutDemandeEngrais);
-
-// Accept volaille demande
-producteurRouter.put("/:producteurId/accept-volaille", acceptStatutDemandeVolaille);
-
-// Refuse volaille demande (with reason in body)
-producteurRouter.put("/:producteurId/refuse-volaille", refusStatutDemandeVolaille);
+producteurRouter.get("/data/:userId", getProducteurDataByUserId);
 
 // Get producteur statuses by userId
 producteurRouter.get("/status/:userId", userIsProducteur);
+producteurRouter.delete("/:producteurId", deleteProducteur);
 
-producteurRouter.patch("/:userId/request-engrais", addDemandeEngrais);
-producteurRouter.patch("/:userId/request-volaille", addDemandeVolaille);
 
 export default producteurRouter;

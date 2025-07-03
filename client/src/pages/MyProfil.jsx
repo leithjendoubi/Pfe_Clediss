@@ -9,6 +9,7 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 import Map from './Map';
 
 const MyProfil = () => {
@@ -24,6 +25,11 @@ const MyProfil = () => {
   const [showVendeurDialog, setShowVendeurDialog] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [producerOrders, setProducerOrders] = useState([]);
+  const [producerOrdersLoading, setProducerOrdersLoading] = useState(true);
+  const [offers, setOffers] = useState({}); // Store offers by order ID
+  const [showOfferDialog, setShowOfferDialog] = useState(false);
+  const [selectedOffer, setSelectedOffer] = useState(null);
 
   // Fetch user orders
   useEffect(() => {
@@ -33,6 +39,7 @@ const MyProfil = () => {
         setOrders(response.data);
       } catch (err) {
         console.error('Error fetching orders:', err);
+        setError(err.response?.data?.message || 'Failed to fetch orders');
       } finally {
         setOrdersLoading(false);
       }
@@ -42,6 +49,87 @@ const MyProfil = () => {
       fetchOrders();
     }
   }, [userData?.userId]);
+
+  // Fetch offers for each order
+  useEffect(() => {
+    const fetchOffers = async () => {
+      if (!userData?.userId || !orders.length) return;
+
+      try {
+        const offerPromises = orders.map(order =>
+          axios.get(`http://localhost:4000/api/offre/offres/order/${order._id}`)
+            .then(res => ({ orderId: order._id, data: res.data.offres?.[0] || null }))
+            .catch(err => ({ orderId: order._id, data: null }))
+        );
+        const offerResults = await Promise.all(offerPromises);
+        const offerMap = offerResults.reduce((acc, { orderId, data }) => {
+          acc[orderId] = data;
+          return acc;
+        }, {});
+        setOffers(offerMap);
+      } catch (err) {
+        console.error('Error fetching offers:', err);
+        setError(err.response?.data?.message || 'Failed to fetch offers');
+      }
+    };
+
+    if (orders.length) {
+      fetchOffers();
+    }
+  }, [orders, userData?.userId]);
+
+  // Fetch orders containing products owned by the current user with status "Order Placed"
+  useEffect(() => {
+    const fetchProducerOrders = async () => {
+      if (!userData?.userId) return;
+      
+      try {
+        const response = await axios.get('http://localhost:4000/api/order/get');
+        const allOrders = response.data;
+
+        // Filter orders containing products owned by current user and with status "Order Placed"
+        const filteredOrders = [];
+        for (const order of allOrders) {
+          if (order.status === 'Order Placed') {
+            for (const item of order.items) {
+              try {
+                const productResponse = await axios.get(`http://localhost:4000/api/product/${item.productId}`);
+                if (productResponse.data.success && productResponse.data.product.userId === userData.userId) {
+                  filteredOrders.push(order);
+                  break; // No need to check other items in this order
+                }
+              } catch (err) {
+                console.error(`Error fetching product ${item.productId}:`, err);
+              }
+            }
+          }
+        }
+        setProducerOrders(filteredOrders);
+      } catch (err) {
+        console.error('Error fetching producer orders:', err);
+        setError(err.response?.data?.message || 'Failed to fetch orders');
+      } finally {
+        setProducerOrdersLoading(false);
+      }
+    };
+
+    if (userData?.userId) {
+      fetchProducerOrders();
+    }
+  }, [userData?.userId]);
+
+  const handleConfirmOrder = async (orderId) => {
+    try {
+      await axios.put(`http://localhost:4000/api/order/update-status/${orderId}`, {
+        status: 'Confirmed and Prepared'
+      });
+      // Remove the order from producerOrders since it no longer has status "Order Placed"
+      setProducerOrders(producerOrders.filter(order => order._id !== orderId));
+    } catch (err) {
+      console.error('Error updating order status:', err);
+      setError(err.response?.data?.message || 'Failed to update order status');
+    }
+  };
 
   const handlePhotoUpload = async (e) => {
     const file = e.target.files[0];
@@ -111,6 +199,7 @@ const MyProfil = () => {
       setShowLivreurDialog(false);
       setShowProducteurDialog(false);
       setShowVendeurDialog(false);
+      setShowOfferDialog(false);
     }
   };
 
@@ -124,8 +213,40 @@ const MyProfil = () => {
     setSelectedOrderId(null);
   };
 
+  const handleSeeOffer = (offer) => {
+    setSelectedOffer(offer);
+    setShowOfferDialog(true);
+  };
+
+  const handleCloseOfferDialog = () => {
+    setShowOfferDialog(false);
+    setSelectedOffer(null);
+  };
+
+  const handleUpdateOfferStatus = async (ordreId, status) => {
+    try {
+      const response = await axios.put(`http://localhost:4000/api/offre/offres/order/${ordreId}`, {
+        statutoffre: status
+      });
+
+      if (response.data.success) {
+        setOffers(prev => ({
+          ...prev,
+          [ordreId]: { ...prev[ordreId], statutoffre: status }
+        }));
+        setShowOfferDialog(false);
+        setSelectedOffer(null);
+      } else {
+        setError(response.data.message || 'Failed to update offer status');
+      }
+    } catch (err) {
+      console.error('Error updating offer status:', err);
+      setError(err.response?.data?.message || 'Failed to update offer status');
+    }
+  };
+
   return (
-    <div className="container mx-auto p-4 relative flex flex-col items-center justify-center min-h-screen bg-[url('/bg1.jpg')] bg-cover bg-center">
+    <div className="flex container mx-auto p-4 relative flex flex-col items-center justify-center min-h-screen bg-[url('/bg1.jpg')] bg-cover bg-center">
       <h1 className="text-2xl font-bold mb-6 text-white">My Profile</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -244,8 +365,72 @@ const MyProfil = () => {
         </div>
 
         <div className="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">My Orders</h2>
+          {producerOrders.length > 0 && (
+            <>
+              <h2 className="text-xl font-semibold mb-4">Orders for My Products</h2>
+              {producerOrdersLoading ? (
+                <p>Loading producer orders...</p>
+              ) : (
+                <div className="space-y-4">
+                  {producerOrders.map((order) => (
+                    <div key={order._id} className="border rounded-lg p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <p className="font-medium">Order #{order._id.substring(0, 8)}</p>
+                          <p className="text-sm text-gray-500">
+                            {new Date(order.date).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <span className="px-2 py-1 rounded text-sm bg-blue-100 text-blue-800">
+                          {order.status}
+                        </span>
+                      </div>
 
+                      <div className="mb-3">
+                        {order.items.map((item, index) => (
+                          <div key={index} className="flex justify-between py-2 border-b">
+                            <div>
+                              <p>{item.name}</p>
+                              <p className="text-sm text-gray-500">
+                                {item.quantity} x {item.price} DT ({item.size})
+                              </p>
+                            </div>
+                            <p>{item.quantity * item.price} DT</p>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="flex justify-between border-t pt-2">
+                        <div>
+                          <p className="text-sm">Delivery: {order.typeLivraison}</p>
+                          <p className="text-sm">Payment: {order.paymentMethod}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-medium">Total: {order.amount + order.amount_livraison} DT</p>
+                          <p className="text-sm text-gray-500">(Products: {order.amount} DT)</p>
+                          {order.amount_livraison > 0 && (
+                            <p className="text-sm text-gray-500">(Delivery: {order.amount_livraison} DT)</p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="mt-4 flex justify-end">
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={() => handleConfirmOrder(order._id)}
+                        >
+                          Confirm and Prepared
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+
+          <h2 className="text-xl font-semibold mb-4 mt-8">My Orders</h2>
           {ordersLoading ? (
             <p>Loading orders...</p>
           ) : orders.length === 0 ? (
@@ -298,7 +483,7 @@ const MyProfil = () => {
                     </div>
                   </div>
 
-                  <div className="mt-4 flex justify-end">
+                  <div className="mt-4 flex justify-end space-x-2">
                     <Button 
                       variant="contained" 
                       color="primary" 
@@ -306,6 +491,15 @@ const MyProfil = () => {
                     >
                       Add Address
                     </Button>
+                    {offers[order._id] && (
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={() => handleSeeOffer(offers[order._id])}
+                      >
+                        See Offer
+                      </Button>
+                    )}
                   </div>
                 </div>
               ))}
@@ -319,6 +513,46 @@ const MyProfil = () => {
         <DialogContent>
           <Map orderId={selectedOrderId} />
         </DialogContent>
+      </Dialog>
+
+      <Dialog open={showOfferDialog} onClose={handleCloseOfferDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>Offer Details</DialogTitle>
+        <DialogContent>
+          {selectedOffer ? (
+            <div className="space-y-2">
+              <p><strong>User ID:</strong> {selectedOffer.userId}</p>
+              <p><strong>Type:</strong> {selectedOffer.typeoffre}</p>
+              <p><strong>Price:</strong> {selectedOffer.pricepardinar} TND</p>
+              <p><strong>Order ID:</strong> {selectedOffer.ordreId.substring(0, 8)}</p>
+              <p><strong>Status:</strong> {selectedOffer.statutoffre}</p>
+            </div>
+          ) : (
+            <p>No offer details available</p>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseOfferDialog} color="primary">
+            Close
+          </Button>
+          {selectedOffer?.statutoffre === 'waiting' && (
+            <>
+              <Button
+                onClick={() => handleUpdateOfferStatus(selectedOffer.ordreId, 'accepted')}
+                color="success"
+                variant="contained"
+              >
+                Accept
+              </Button>
+              <Button
+                onClick={() => handleUpdateOfferStatus(selectedOffer.ordreId, 'rejected')}
+                color="error"
+                variant="contained"
+              >
+                Deny
+              </Button>
+            </>
+          )}
+        </DialogActions>
       </Dialog>
 
       {(showLivreurDialog || showProducteurDialog || showVendeurDialog) && (

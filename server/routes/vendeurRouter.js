@@ -3,13 +3,12 @@ import {
   addVendeur,
   acceptStatutDemande,
   refusStatutDemande,
-  acceptStatutDemandeEngrais,
-  refusStatutDemandeEngrais,
-  acceptStatutDemandeVolaille,
-  refusStatutDemandeVolaille,
   userIsVendeur,
-  addDemandeEngrais,
-  addDemandeVolaille,
+  getVendeurDataByUserId,
+  getAcceptedDemandsVendeurs,
+  deleteVendeur,
+stopVendeur,
+  getDemandsVendeurs,
 } from '../controllers/vendeurController.js';
 import upload from '../middleware/multer.js';
 
@@ -31,15 +30,14 @@ vendeurRouter.post("/", upload.fields(documentFields), addVendeur);
 // Status management routes
 vendeurRouter.put("/accept/:vendeurId", acceptStatutDemande);
 vendeurRouter.put("/refuse/:vendeurId", refusStatutDemande);
-vendeurRouter.put("/accept-engrais/:vendeurId", acceptStatutDemandeEngrais);
-vendeurRouter.put("/refuse-engrais/:vendeurId", refusStatutDemandeEngrais);
-vendeurRouter.put("/accept-volaille/:vendeurId", acceptStatutDemandeVolaille);
-vendeurRouter.put("/refuse-volaille/:vendeurId", refusStatutDemandeVolaille);
-
-vendeurRouter.patch("/:userId/request-engrais", addDemandeEngrais);
-vendeurRouter.patch("/:userId/request-volaille", addDemandeVolaille);
+vendeurRouter.get("/demands", getDemandsVendeurs);
+vendeurRouter.get("/demandsaccepted", getAcceptedDemandsVendeurs);
 
 // Check vendeur status
 vendeurRouter.get("/status/:userId", userIsVendeur);
+vendeurRouter.delete("/:vendeurId", deleteVendeur);
+vendeurRouter.put("/:vendeurId/stop", stopVendeur);
+// Get complete vendeur data by userId
+vendeurRouter.get("/data/:userId", getVendeurDataByUserId);
 
 export default vendeurRouter;

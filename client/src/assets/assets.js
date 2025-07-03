@@ -13,6 +13,7 @@ import livraison_icon from './livraison_icon.png'
 import upload_area from './upload_area.png'
 import firma from './firma.png'
 import elfirma from './elfirma.png'
+import tunisianflag from './tunisianflag.jpg'
 
 export const assets = {
     arrow_icon,
@@ -29,5 +30,6 @@ export const assets = {
     maps_icon,
     upload_area,
     firma,
-    elfirma
+    elfirma,
+    tunisianflag
 }

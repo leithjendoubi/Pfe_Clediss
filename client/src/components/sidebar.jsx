@@ -18,7 +18,7 @@ const { userData } = useContext(AppContext);
   ];
 
   return (
-    <div className="h-screen w-64 bg-white border-r-2 border-blue-500 fixed left-0 top-0 flex flex-col">
+    <div className="flex h-screen w-64 bg-white border-r-2 border-blue-500 fixed left-0 top-0 flex flex-col">
       {/* Empty div to push content to center */}
       <div className="flex-grow"></div>
       

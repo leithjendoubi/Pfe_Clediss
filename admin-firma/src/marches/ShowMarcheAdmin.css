@@ -1,0 +1,132 @@
+.marche-admin-container {
+  direction: rtl;
+  font-family: 'Cairo', sans-serif;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.filters {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.filter-group label {
+  font-weight: bold;
+}
+
+.filter-group input {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.marche-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  border: 2px solid rgb(21, 76, 202);
+}
+
+.marche-table th, .marche-table td {
+  border: 1px solid rgb(24, 68, 171);
+  padding: 10px;
+  text-align: center;
+}
+
+.marche-table th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+.marche-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.marche-table tr:hover {
+  background-color: #f0f0f0;
+}
+
+.marche-name {
+  color: blue;
+  font-weight: bold;
+}
+
+/* Radio button styling */
+input[type="radio"] {
+  margin-left: 5px;
+  accent-color: green;
+}
+
+/* From Uiverse.io by gharsh11032000 */ 
+.button-container {
+  display: flex;
+  justify-content: flex-start; /* Align to the left */
+  margin-top: 20px;
+  padding-left: 20px; /* Match table padding */
+}
+
+/* Your existing button styles */
+.button {
+  cursor: pointer;
+  position: relative;
+  padding: 10px 24px;
+  font-size: 18px;
+  color: rgb(56, 67, 218);
+  border: 2px solid rgb(32, 74, 153);
+  border-radius: 34px;
+  background-color: transparent;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+  overflow: hidden;
+  font-family: 'Cairo', sans-serif;
+}
+
+.button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 50px;
+  height: 50px;
+  border-radius: inherit;
+  scale: 0;
+  z-index: -1;
+  background-color: rgb(142, 166, 212);
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.button:hover::before {
+  scale: 3;
+}
+
+.button:hover {
+  color: #3239f7;
+  scale: 1.1;
+  box-shadow: 0 0px 20px rgba(28, 84, 206, 0.4);
+}
+
+.button:active {
+  scale: 1;
+}
+
+/* Dialog title styling */
+.MuiDialogTitle-root {
+  font-family: 'Cairo', sans-serif !important;
+  text-align: center;
+  color: #2c3e50;
+}
+
+

@@ -169,7 +169,7 @@ export const getlivreuraccepte = async (req, res) => {
 // Reject a livreur demand (additional useful method)
 export const rejectdemande = async (req, res) => {
   try {
-    const { livreurId } = req.params;
+    const { livreurId } = req.body;
 
     const updatedLivreur = await livreurModel.findByIdAndUpdate(
       livreurId,

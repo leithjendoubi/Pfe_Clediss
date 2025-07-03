@@ -13,22 +13,7 @@ export const getNewestAdministration = async (req, res) => {
   }
 };
 
-// Update administration record
-export const updateAdministration = async (req, res) => {
-  try {
-    // Get the newest record first to set as oldDate
-    const newestAdmin = await AdministrationModel.findOne().sort({ newDate: -1 });
-    
-    const updatedAdmin = await AdministrationModel.create({
-      ...req.body,
-      oldDate: newestAdmin ? newestAdmin.newDate : null
-    });
 
-    res.status(201).json(updatedAdmin);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
 
 // Get typeMarche
 export const getTypeMarche = async (req, res) => {
@@ -158,5 +143,76 @@ export const initializeAdministration = async () => {
   } catch (error) {
     console.error("Error initializing administration data:", error);
     throw error;
+  }
+};
+
+export const updateAdministration = async (req, res) => {
+  try {
+    // Get the most recent administration record
+    const latestRecord = await AdministrationModel.findOne().sort({ newDate: -1 });
+    
+    if (!latestRecord) {
+      return res.status(404).json({ message: 'No administration record found to update' });
+    }
+
+    // Convert mongoose document to plain JavaScript object
+    const currentData = latestRecord.toObject();
+    delete currentData._id;
+    delete currentData.__v;
+    delete currentData.newDate;
+    delete currentData.oldDate;
+
+    // Create new record with updated fields
+    const updatedRecord = await AdministrationModel.create({
+      ...currentData,           // Copy all existing data
+      ...req.body,              // Apply updates from request
+      oldDate: latestRecord.newDate,  // Set oldDate to previous record's newDate
+      newDate: new Date()        // Set current timestamp for newDate
+    });
+
+    res.status(201).json(updatedRecord);
+  } catch (error) {
+    res.status(400).json({ 
+      message: error.message,
+      details: error.errors 
+    });
+  }
+};
+
+export const getAdministrationHistory = async (req, res) => {
+  try {
+    const history = await AdministrationModel.find().sort({ newDate: -1 }); // newest first
+    res.status(200).json(history);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+// Get products by category
+export const getProduitParCategorie = async (req, res) => {
+  try {
+    const { categorie } = req.body;
+    
+    // Validate input
+    if (!categorie || typeof categorie !== 'string') {
+      return res.status(400).json({ message: 'Category string is required' });
+    }
+
+    // Get the newest administration record
+    const newestAdmin = await AdministrationModel.findOne().sort({ newDate: -1 });
+    if (!newestAdmin) {
+      return res.status(404).json({ message: 'No administration records found' });
+    }
+
+    // Find products for the requested category
+    const products = newestAdmin.produits.find(([cat]) => cat === categorie);
+
+    // If no products found for the given category
+    if (!products) {
+      return res.status(404).json({ message: 'No products found for the specified category' });
+    }
+
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };

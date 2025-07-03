@@ -36,15 +36,7 @@ const vendeurSchema = new mongoose.Schema({
   },
     statutdemande: {
     type: String,
-    default: "معالجة"
-  },
-  statutdemandeengrais: {
-    type: String,
-    default: ""
-  },
-  statutdemandevolaille: {
-    type: String,
-    default: ""
+    default: "en traitement"
   }
 }, { timestamps: true });
 

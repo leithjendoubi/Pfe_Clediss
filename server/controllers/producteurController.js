@@ -99,6 +99,48 @@ export const addProducteur = async (req, res) => {
   }
 };
 
+export const deleteProducteur = async (req, res) => {
+  try {
+    const { producteurId } = req.params;
+
+    const producteur = await Producteur.findOneAndDelete({ _id: producteurId });
+
+    if (!producteur) {
+      return res.status(404).json({ message: "Producteur not found" });
+    }
+
+    res.status(200).json({ message: "Producteur deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ 
+      message: "Error deleting Producteur",
+      error: error.message 
+    });
+  }
+};
+
+export const stopProducteur = async (req, res) => {
+  try {
+    const { producteurId } = req.params;
+
+    const producteur = await Producteur.findOneAndUpdate(
+      { _id: producteurId },
+      { $set: { statutdemande: "arrêter" } },
+      { new: true }
+    );
+
+    if (!producteur) {
+      return res.status(404).json({ message: "Producteur not found" });
+    }
+
+    res.status(200).json({ message: "Producteur stopped successfully", producteur });
+  } catch (error) {
+    res.status(500).json({ 
+      message: "Error stopping Producteur",
+      error: error.message 
+    });
+  }
+};
+
 // Accept producteur demande (set statutdemande to "مقبول")
 export const acceptStatutDemande = async (req, res) => {
   try {
@@ -150,107 +192,8 @@ export const refusStatutDemande = async (req, res) => {
   }
 };
 
-// Accept engrais demande (set statutdemandeengrais to "مقبول")
-export const acceptStatutDemandeEngrais = async (req, res) => {
-  try {
-    const { producteurId } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(producteurId)) {
-      return res.status(400).json({ message: "Invalid producteur ID" });
-    }
 
-    const updatedProducteur = await Producteur.findByIdAndUpdate(
-      producteurId,
-      { statutdemandeengrais: "مقبول" },
-      { new: true }
-    );
-
-    if (!updatedProducteur) {
-      return res.status(404).json({ message: "Producteur not found" });
-    }
-
-    res.json(updatedProducteur);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Refuse engrais demande
-export const refusStatutDemandeEngrais = async (req, res) => {
-  try {
-    const { producteurId } = req.params;
-    const { reason } = req.body;
-
-    if (!mongoose.Types.ObjectId.isValid(producteurId)) {
-      return res.status(400).json({ message: "Invalid producteur ID" });
-    }
-
-    const updatedProducteur = await Producteur.findByIdAndUpdate(
-      producteurId,
-      { statutdemandeengrais: `مرفوض: ${reason}` },
-      { new: true }
-    );
-
-    if (!updatedProducteur) {
-      return res.status(404).json({ message: "Producteur not found" });
-    }
-
-    res.json(updatedProducteur);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Accept volaille demande (set statutdemandevolaille to "مقبول")
-export const acceptStatutDemandeVolaille = async (req, res) => {
-  try {
-    const { producteurId } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(producteurId)) {
-      return res.status(400).json({ message: "Invalid producteur ID" });
-    }
-
-    const updatedProducteur = await Producteur.findByIdAndUpdate(
-      producteurId,
-      { statutdemandevolaille: "مقبول" },
-      { new: true }
-    );
-
-    if (!updatedProducteur) {
-      return res.status(404).json({ message: "Producteur not found" });
-    }
-
-    res.json(updatedProducteur);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Refuse volaille demande
-export const refusStatutDemandeVolaille = async (req, res) => {
-  try {
-    const { producteurId } = req.params;
-    const { reason } = req.body;
-
-    if (!mongoose.Types.ObjectId.isValid(producteurId)) {
-      return res.status(400).json({ message: "Invalid producteur ID" });
-    }
-
-    const updatedProducteur = await Producteur.findByIdAndUpdate(
-      producteurId,
-      { statutdemandevolaille: `مرفوض: ${reason}` },
-      { new: true }
-    );
-
-    if (!updatedProducteur) {
-      return res.status(404).json({ message: "Producteur not found" });
-    }
-
-    res.json(updatedProducteur);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 
 // Get producteur statuses by userId
 export const userIsProducteur = async (req, res) => {
@@ -263,63 +206,88 @@ export const userIsProducteur = async (req, res) => {
       return res.status(404).json({ message: "Producteur not found for this user" });
     }
 
-    // Return only the status fields
-    const statusData = {
+    // Return true if statutdemande is "مقبول", false otherwise
+    const isProducteur = producteur.statutdemande === "مقبول";
+
+    res.json(isProducteur);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+export const getProducteurDataByUserId = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const producteur = await Producteur.findOne({ userId });
+
+    if (!producteur) {
+      return res.status(404).json({ message: "Producteur not found for this user" });
+    }
+
+    // Return all relevant producteur data
+    const producteurData = {
+      userId: producteur.userId,
+      numeroPhone: producteur.numeroPhone,
+      adressProfessionnel: producteur.adressProfessionnel,
+      categorieProduitMarche: producteur.categorieProduitMarche,
+      typeDesProducteurs: producteur.typeDesProducteurs,
+      nometprenomlegal: producteur.nometprenomlegal,
+      documents: producteur.documents,
+      adressDeStockage: producteur.adressDeStockage,
       statutdemande: producteur.statutdemande,
-      statutdemandeengrais: producteur.statutdemandeengrais,
-      statutdemandevolaille: producteur.statutdemandevolaille
+      createdAt: producteur.createdAt,
+      updatedAt: producteur.updatedAt
     };
 
-    res.json(statusData);
+    res.json(producteurData);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-export const addDemandeEngrais = async (req, res) => {
+
+
+
+
+
+
+
+
+
+
+
+export const getDemandProducteurs = async (req, res) => {
   try {
-    const { userId } = req.params; // Changed to userId
-
-    // Find producer by userId (no need for ObjectId validation since userId is a String)
-    const updatedProducteur = await Producteur.findOneAndUpdate(
-      { userId }, // Query by userId
-      { statutdemandeengrais: "في المعالجة" }, // Set status to "Processing"
-      { new: true }
-    );
-
-    if (!updatedProducteur) {
-      return res.status(404).json({ message: "Producer not found for this user" });
-    }
-
-    res.json({
-      message: "Fertilizer trade request submitted",
-      statutdemandeengrais: updatedProducteur.statutdemandeengrais,
+    const pendingProducteurs = await Producteur.find({ 
+      statutdemande: "في المعالجة" 
     });
+
+    // Always return 200, with empty array if none found
+    res.status(200).json(pendingProducteurs || []);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ 
+      message: "Error fetching pending producteurs",
+      error: error.message 
+    });
   }
 };
 
-export const addDemandeVolaille = async (req, res) => {
+export const getDemandProducteursaccepted = async (req, res) => {
   try {
-    const { userId } = req.params; // Changed to userId
-
-    // Find producer by userId
-    const updatedProducteur = await Producteur.findOneAndUpdate(
-      { userId }, // Query by userId
-      { statutdemandevolaille: "في المعالجة" }, // Set status to "Processing"
-      { new: true }
-    );
-
-    if (!updatedProducteur) {
-      return res.status(404).json({ message: "Producer not found for this user" });
-    }
-
-    res.json({
-      message: "Poultry trade request submitted",
-      statutdemandevolaille: updatedProducteur.statutdemandevolaille,
+    const acceptedProducteurs = await Producteur.find({ 
+      statutdemande: "مقبول" 
     });
+
+    // Always return 200 with an array (empty if no results)
+    res.status(200).json(acceptedProducteurs || []);
+    
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ 
+      message: "Error fetching accepted producteurs",
+      error: error.message 
+    });
   }
 };
