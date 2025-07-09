@@ -175,7 +175,7 @@ const PriceEditor = ({ value = [], onChange }) => {
         {prices.map(([product, price], index) => (
           <div key={index} className="price-item">
             <span className="price-product">{product}</span>
-            <span className="price-value">{price} TND</span>
+            <span className="price-value">{price} دينار</span>
             <Button
               type="text"
               icon={<DeleteOutlined />}
@@ -362,7 +362,7 @@ const AdministrationDashboard = () => {
                 {data?.map?.(([product, price], index) => (
                   <tr key={index}>
                     <td>{product}</td>
-                    <td>{price} TND</td>
+                    <td>{price} دينار</td>
                   </tr>
                 ))}
               </tbody>

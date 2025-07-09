@@ -9,6 +9,7 @@ import {
   deleteVendeur,
 stopVendeur,
   getDemandsVendeurs,
+  getallvenders,
 } from '../controllers/vendeurController.js';
 import upload from '../middleware/multer.js';
 
@@ -31,10 +32,14 @@ vendeurRouter.post("/", upload.fields(documentFields), addVendeur);
 vendeurRouter.put("/accept/:vendeurId", acceptStatutDemande);
 vendeurRouter.put("/refuse/:vendeurId", refusStatutDemande);
 vendeurRouter.get("/demands", getDemandsVendeurs);
+vendeurRouter.get("/getall", getallvenders);
 vendeurRouter.get("/demandsaccepted", getAcceptedDemandsVendeurs);
 
+
+
+
 // Check vendeur status
-vendeurRouter.get("/status/:userId", userIsVendeur);
+vendeurRouter.get("/statut/:userId", userIsVendeur);
 vendeurRouter.delete("/:vendeurId", deleteVendeur);
 vendeurRouter.put("/:vendeurId/stop", stopVendeur);
 // Get complete vendeur data by userId

@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const producteurSchema = new mongoose.Schema({
   userId: { 
     type: String, 
-    required: false 
+    required: true 
   },
   numeroPhone: { 
     type: Number, 
@@ -39,14 +39,6 @@ const producteurSchema = new mongoose.Schema({
   statutdemande: {
     type: String,
     default: "في المعالجة"
-  },
-  statutdemandeengrais: {
-    type: String,
-    default: ""
-  },
-  statutdemandevolaille: {
-    type: String,
-    default: ""
   }
 }, { timestamps: true });
 

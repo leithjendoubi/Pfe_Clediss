@@ -2,277 +2,421 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const ProducteurVendeur = () => {
-  const [producteurDemands, setProducteurDemands] = useState([]);
-  const [acceptedProducteurDemands, setAcceptedProducteurDemands] = useState([]);
-  const [vendeurDemands, setVendeurDemands] = useState([]);
-  const [acceptedVendeurDemands, setAcceptedVendeurDemands] = useState([]);
+  // State for all data categories
+  const [data, setData] = useState({
+    pendingProducers: [],
+    acceptedProducers: [],
+    pendingSellers: [],
+    acceptedSellers: [],
+    allProducers: [],
+    allSellers: []
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('pending');
 
-  // Fetch producteur demands
-  const fetchProducteurDemands = async () => {
-    try {
-      const response = await axios.get('http://localhost:4000/api/producteur/demands');
-      setProducteurDemands(response.data);
-    } catch (err) {
-      setError('Failed to fetch producteur demands');
+  // API endpoints configuration
+  const API_ENDPOINTS = {
+    producers: {
+      pending: 'http://localhost:4000/api/producteur/demands',
+      accepted: 'http://localhost:4000/api/producteur/demandsaccepted',
+      all: 'http://localhost:4000/api/producteur/getall'
+    },
+    sellers: {
+      pending: 'http://localhost:4000/api/vendeur/demands',
+      accepted: 'http://localhost:4000/api/vendeur/demandsaccepted',
+      all: 'http://localhost:4000/api/vendeur/getall'
     }
   };
 
-  // Fetch accepted producteur demands
-  const fetchAcceptedProducteurDemands = async () => {
+  // Fetch data with error handling
+  const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/api/producteur/demandsaccepted');
-      setAcceptedProducteurDemands(response.data);
-    } catch (err) {
-      setError('Failed to fetch accepted producteur demands');
-    }
-  };
-
-  // Fetch vendeur demands
-  const fetchVendeurDemands = async () => {
-    try {
-      const response = await axios.get('http://localhost:4000/api/vendeur/demands');
-      setVendeurDemands(response.data);
-    } catch (err) {
-      setError('Failed to fetch vendeur demands');
-    }
-  };
-
-  // Fetch accepted vendeur demands
-  const fetchAcceptedVendeurDemands = async () => {
-    try {
-      const response = await axios.get('http://localhost:4000/api/vendeur/demandsaccepted');
-      setAcceptedVendeurDemands(response.data);
-    } catch (err) {
-      setError('Failed to fetch accepted vendeur demands');
-    }
-  };
-
-  // Initial data fetch
-  useEffect(() => {
-    const fetchData = async () => {
       setLoading(true);
-      await Promise.all([
-        fetchProducteurDemands(),
-        fetchAcceptedProducteurDemands(),
-        fetchVendeurDemands(),
-        fetchAcceptedVendeurDemands(),
+      setError(null);
+
+      const [
+        pendingProducers,
+        acceptedProducers,
+        pendingSellers,
+        acceptedSellers,
+        allProducers,
+        allSellers
+      ] = await Promise.all([
+        axios.get(API_ENDPOINTS.producers.pending),
+        axios.get(API_ENDPOINTS.producers.accepted),
+        axios.get(API_ENDPOINTS.sellers.pending),
+        axios.get(API_ENDPOINTS.sellers.accepted),
+        axios.get(API_ENDPOINTS.producers.all),
+        axios.get(API_ENDPOINTS.sellers.all)
       ]);
+
+      setData({
+        pendingProducers: pendingProducers.data,
+        acceptedProducers: acceptedProducers.data,
+        pendingSellers: pendingSellers.data,
+        acceptedSellers: acceptedSellers.data,
+        allProducers: allProducers.data,
+        allSellers: allSellers.data
+      });
+    } catch (err) {
+      console.error('Fetch error:', err);
+      setError('Failed to load data. Please try again later.');
+    } finally {
       setLoading(false);
-    };
+    }
+  };
+
+  // Action handlers
+  const handleAccept = async (type, id) => {
+    try {
+      const endpoint = type === 'producer' 
+        ? `http://localhost:4000/api/producteur/${id}/accept-demande`
+        : `http://localhost:4000/api/vendeur/accept/${id}`;
+      
+      await axios.put(endpoint);
+      await fetchData(); // Refresh all data
+    } catch (err) {
+      setError(`Failed to accept ${type} demand`);
+    }
+  };
+
+  const handleRefuse = async (type, id) => {
+    try {
+      const endpoint = type === 'producer' 
+        ? `http://localhost:4000/api/producteur/${id}/refuse-demande`
+        : `http://localhost:4000/api/vendeur/refuse/${id}`;
+      
+      await axios.put(endpoint);
+      await fetchData(); // Refresh all data
+    } catch (err) {
+      setError(`Failed to refuse ${type} demand`);
+    }
+  };
+
+  const handleStop = async (type, id) => {
+    try {
+      await axios.put(`http://localhost:4000/api/${type}/${id}/stop`);
+      await fetchData(); // Refresh all data
+    } catch (err) {
+      setError(`Failed to stop ${type} demand`);
+    }
+  };
+
+  const handleDelete = async (type, id) => {
+    if (window.confirm(`Are you sure you want to delete this ${type}?`)) {
+      try {
+        await axios.delete(`http://localhost:4000/api/${type}/${id}`);
+        await fetchData(); // Refresh all data
+      } catch (err) {
+        setError(`Failed to delete ${type} demand`);
+      }
+    }
+  };
+
+  // Initial data load
+  useEffect(() => {
     fetchData();
   }, []);
 
-  // Handle accept producteur demand
-  const handleAcceptProducteur = async (producteurId) => {
-    try {
-      await axios.put(`http://localhost:4000/api/producteur/${producteurId}/accept-demande`);
-      await fetchProducteurDemands();
-      await fetchAcceptedProducteurDemands();
-    } catch (err) {
-      setError('Failed to accept producteur demand');
-    }
+  // Table component
+  const DataTable = ({ items, type, showActions = true }) => {
+    const isProducer = type === 'producer';
+    const isAllView = !showActions;
+
+    return (
+      <div className="overflow-x-auto rounded-lg border border-blue-100 shadow-sm mb-8">
+        <table className="min-w-full divide-y divide-blue-200">
+          <thead className="bg-blue-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Name</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Phone</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Address</th>
+              {!isAllView && (
+                <th className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Storage</th>
+              )}
+              <th className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Category</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Type</th>
+              {!isAllView && (
+                <th className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Status</th>
+              )}
+              <th className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Documents</th>
+              {showActions && (
+                <th className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Actions</th>
+              )}
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-blue-200">
+            {items.map((item) => (
+              <tr key={item._id} className="hover:bg-blue-50 transition-colors">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  {item.nometprenomlegal}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                  {item.numeroPhone}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                  {item.adressProfessionnel}
+                </td>
+                {!isAllView && (
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    {item.adressDeStockage}
+                  </td>
+                )}
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                  {item.categorieProduitMarche?.join(', ') || 'N/A'}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                  {isProducer ? item.typeDesProducteurs || 'N/A' : item.typeDesVendeurs || 'N/A'}
+                </td>
+                {!isAllView && (
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                      ${item.statutdemande === 'accepted' ? 'bg-green-100 text-green-800' : 
+                        item.statutdemande === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                        'bg-red-100 text-red-800'}`}>
+                      {item.statutdemande}
+                    </span>
+                  </td>
+                )}
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                  {item.documents ? (
+                    <div className="flex flex-col space-y-1">
+                      {Object.values(item.documents).map((doc, index) => (
+                        <a
+                          key={index}
+                          href={doc.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 hover:underline"
+                        >
+                          {doc.title}
+                        </a>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="text-gray-400">No Documents</span>
+                  )}
+                </td>
+                {showActions && (
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    {item.statutdemande === 'accepted' ? (
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleStop(type, item._id)}
+                          className="px-3 py-1 bg-yellow-500 text-white text-xs rounded-md hover:bg-yellow-600 transition-colors"
+                        >
+                          Stop
+                        </button>
+                        <button
+                          onClick={() => handleDelete(type, item._id)}
+                          className="px-3 py-1 bg-red-500 text-white text-xs rounded-md hover:bg-red-600 transition-colors"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleAccept(type, item._id)}
+                          className="px-3 py-1 bg-blue-600 text-white text-xs rounded-md hover:bg-blue-700 transition-colors"
+                        >
+                          Accept
+                        </button>
+                        <button
+                          onClick={() => handleRefuse(type, item._id)}
+                          className="px-3 py-1 bg-gray-500 text-white text-xs rounded-md hover:bg-gray-600 transition-colors"
+                        >
+                          Refuse
+                        </button>
+                      </div>
+                    )}
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
   };
 
-  // Handle refuse producteur demand
-  const handleRefuseProducteur = async (producteurId) => {
-    try {
-      await axios.put(`http://localhost:4000/api/producteur/${producteurId}/refuse-demande`);
-      await fetchProducteurDemands();
-    } catch (err) {
-      setError('Failed to refuse producteur demand');
-    }
-  };
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-blue-50">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-lg font-medium text-blue-800">Loading data...</p>
+        </div>
+      </div>
+    );
+  }
 
-  // Handle stop producteur demand
-  const handleStopProducteur = async (producteurId) => {
-    try {
-      await axios.put(`http://localhost:4000/api/producteur/${producteurId}/stop`);
-      await fetchAcceptedProducteurDemands();
-    } catch (err) {
-      setError('Failed to stop producteur demand');
-    }
-  };
+  // Error state
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-blue-50">
+        <div className="bg-white p-6 rounded-lg shadow-md max-w-md w-full text-center">
+          <div className="text-red-500 mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">Error</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button 
+            onClick={fetchData}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
-  // Handle delete producteur demand
-  const handleDeleteProducteur = async (producteurId) => {
-    if (window.confirm('Are you sure you want to delete this producteur demand?')) {
-      try {
-        await axios.delete(`http://localhost:4000/api/producteur/${producteurId}`);
-        await fetchAcceptedProducteurDemands();
-      } catch (err) {
-        setError('Failed to delete producteur demand');
-      }
-    }
-  };
-
-  // Handle accept vendeur demand
-  const handleAcceptVendeur = async (vendeurId) => {
-    try {
-      await axios.put(`http://localhost:4000/api/vendeur/accept/${vendeurId}`);
-      await fetchVendeurDemands();
-      await fetchAcceptedVendeurDemands();
-    } catch (err) {
-      setError('Failed to accept vendeur demand');
-    }
-  };
-
-  // Handle refuse vendeur demand
-  const handleRefuseVendeur = async (vendeurId) => {
-    try {
-      await axios.put(`http://localhost:4000/api/vendeur/refuse/${vendeurId}`);
-      await fetchVendeurDemands();
-    } catch (err) {
-      setError('Failed to refuse vendeur demand');
-    }
-  };
-
-  // Handle stop vendeur demand
-  const handleStopVendeur = async (vendeurId) => {
-    try {
-      await axios.put(`http://localhost:4000/api/vendeur/${vendeurId}/stop`);
-      await fetchAcceptedVendeurDemands();
-    } catch (err) {
-      setError('Failed to stop vendeur demand');
-    }
-  };
-
-  // Handle delete vendeur demand
-  const handleDeleteVendeur = async (vendeurId) => {
-    if (window.confirm('Are you sure you want to delete this vendeur demand?')) {
-      try {
-        await axios.delete(`http://localhost:4000/api/vendeur/${vendeurId}`);
-        await fetchAcceptedVendeurDemands();
-      } catch (err) {
-        setError('Failed to delete vendeur demand');
-      }
-    }
-  };
-
-  if (loading) return <div className="text-center p-4">Loading...</div>;
-  if (error) return <div className="text-red-500 text-center p-4">{error}</div>;
-
+  // Main render
   return (
-    <div className="container mx-auto p-4">
-      {/* Section 1: Pending Producteur Demands */}
-      <h2 className="text-2xl font-bold mb-4">Pending Producteur Demands</h2>
-      <div className="grid gap-4">
-        {producteurDemands.map((demand) => (
-          <div key={demand._id} className="border p-4 rounded-lg shadow">
-            <p><strong>Name:</strong> {demand.nometprenomlegal}</p>
-            <p><strong>Phone:</strong> {demand.numeroPhone}</p>
-            <p><strong>Address:</strong> {demand.adressProfessionnel}</p>
-            <p><strong>Storage Address:</strong> {demand.adressDeStockage}</p>
-            <p><strong>Category:</strong> {demand.categorieProduitMarche.join(', ')}</p>
-            <p><strong>Type:</strong> {demand.typeDesProducteurs}</p>
-            <p><strong>Status:</strong> {demand.statutdemande}</p>
-            <div className="mt-2">
-              <button
-                onClick={() => handleAcceptProducteur(demand._id)}
-                className="bg-green-500 text-white px-4 py-2 rounded mr-2 hover:bg-green-600"
-              >
-                Accept
-              </button>
-              <button
-                onClick={() => handleRefuseProducteur(demand._id)}
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-              >
-                Refuse
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+    <div className="min-h-screen bg-blue-50 p-4 md:p-8">
+      <div className="max-w-7xl mx-auto">
+        <header className="mb-8">
+          <h1 className="text-3xl font-bold text-blue-800">Producer & Seller Management</h1>
+          <p className="text-blue-600 mt-2">Comprehensive management dashboard</p>
+        </header>
 
-      {/* Section 2: Accepted Producteur Demands */}
-      <h2 className="text-2xl font-bold mt-8 mb-4">Accepted Producteur Demands</h2>
-      <div className="grid gap-4">
-        {acceptedProducteurDemands.map((demand) => (
-          <div key={demand._id} className="border p-4 rounded-lg shadow">
-            <p><strong>Name:</strong> {demand.nometprenomlegal}</p>
-            <p><strong>Phone:</strong> {demand.numeroPhone}</p>
-            <p><strong>Address:</strong> {demand.adressProfessionnel}</p>
-            <p><strong>Storage Address:</strong> {demand.adressDeStockage}</p>
-            <p><strong>Category:</strong> {demand.categorieProduitMarche.join(', ')}</p>
-            <p><strong>Type:</strong> {demand.typeDesProducteurs}</p>
-            <p><strong>Status:</strong> {demand.statutdemande}</p>
-            <div className="mt-2">
-              <button
-                onClick={() => handleStopProducteur(demand._id)}
-                className="bg-yellow-500 text-white px-4 py-2 rounded mr-2 hover:bg-yellow-600"
-              >
-                Stop
-              </button>
-              <button
-                onClick={() => handleDeleteProducteur(demand._id)}
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+        {/* Navigation Tabs */}
+        <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+          <nav className="flex">
+            <button
+              onClick={() => setActiveTab('pending')}
+              className={`flex-1 py-4 px-6 text-center border-b-2 font-medium text-sm ${activeTab === 'pending' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+            >
+              Pending Demands
+            </button>
+            <button
+              onClick={() => setActiveTab('accepted')}
+              className={`flex-1 py-4 px-6 text-center border-b-2 font-medium text-sm ${activeTab === 'accepted' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+            >
+              Accepted Demands
+            </button>
+            <button
+              onClick={() => setActiveTab('all')}
+              className={`flex-1 py-4 px-6 text-center border-b-2 font-medium text-sm ${activeTab === 'all' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+            >
+              All Records
+            </button>
+          </nav>
+        </div>
 
-      {/* Section 3: Pending Vendeur Demands */}
-      <h2 className="text-2xl font-bold mt-8 mb-4">Pending Vendeur Demands</h2>
-      <div className="grid gap-4">
-        {vendeurDemands.map((demand) => (
-          <div key={demand._id} className="border p-4 rounded-lg shadow">
-            <p><strong>Name:</strong> {demand.nometprenomlegal}</p>
-            <p><strong>Phone:</strong> {demand.numeroPhone}</p>
-            <p><strong>Address:</strong> {demand.adressProfessionnel}</p>
-            <p><strong>Storage Address:</strong> {demand.adressDeStockage}</p>
-            <p><strong>Category:</strong> {demand.categorieProduitMarche.join(', ')}</p>
-            <p><strong>Type:</strong> {demand.typeDesProducteurs}</p>
-            <p><strong>Status:</strong> {demand.statutdemande}</p>
-            <div className="mt-2">
-              <button
-                onClick={() => handleAcceptVendeur(demand._id)}
-                className="bg-green-500 text-white px-4 py-2 rounded mr-2 hover:bg-green-600"
-              >
-                Accept
-              </button>
-              <button
-                onClick={() => handleRefuseVendeur(demand._id)}
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-              >
-                Refuse
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+        {/* Content based on active tab */}
+        {activeTab === 'pending' && (
+          <>
+            <section className="mb-12">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-blue-800">Pending Producers</h2>
+                <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                  {data.pendingProducers.length} pending
+                </span>
+              </div>
+              {data.pendingProducers.length > 0 ? (
+                <DataTable items={data.pendingProducers} type="producer" />
+              ) : (
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-blue-100 text-center">
+                  <p className="text-gray-500">No pending producer demands found.</p>
+                </div>
+              )}
+            </section>
 
-      {/* Section 4: Accepted Vendeur Demands */}
-      <h2 className="text-2xl font-bold mt-8 mb-4">Accepted Vendeur Demands</h2>
-      <div className="grid gap-4">
-        {acceptedVendeurDemands.map((demand) => (
-          <div key={demand._id} className="border p-4 rounded-lg shadow">
-            <p><strong>Name:</strong> {demand.nometprenomlegal}</p>
-            <p><strong>Phone:</strong> {demand.numeroPhone}</p>
-            <p><strong>Address:</strong> {demand.adressProfessionnel}</p>
-            <p><strong>Storage Address:</strong> {demand.adressDeStockage}</p>
-            <p><strong>Category:</strong> {demand.categorieProduitMarche.join(', ')}</p>
-            <p><strong>Type:</strong> {demand.typeDesProducteurs}</p>
-            <p><strong>Status:</strong> {demand.statutdemande}</p>
-            <div className="mt-2">
-              <button
-                onClick={() => handleStopVendeur(demand._id)}
-                className="bg-yellow-500 text-white px-4 py-2 rounded mr-2 hover:bg-yellow-600"
-              >
-                Stop
-              </button>
-              <button
-                onClick={() => handleDeleteVendeur(demand._id)}
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
+            <section className="mb-12">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-blue-800">Pending Sellers</h2>
+                <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                  {data.pendingSellers.length} pending
+                </span>
+              </div>
+              {data.pendingSellers.length > 0 ? (
+                <DataTable items={data.pendingSellers} type="seller" />
+              ) : (
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-blue-100 text-center">
+                  <p className="text-gray-500">No pending seller demands found.</p>
+                </div>
+              )}
+            </section>
+          </>
+        )}
+
+        {activeTab === 'accepted' && (
+          <>
+            <section className="mb-12">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-blue-800">Active Producers</h2>
+                <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                  {data.acceptedProducers.length} active
+                </span>
+              </div>
+              {data.acceptedProducers.length > 0 ? (
+                <DataTable items={data.acceptedProducers} type="producer" />
+              ) : (
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-blue-100 text-center">
+                  <p className="text-gray-500">No active producers found.</p>
+                </div>
+              )}
+            </section>
+
+            <section className="mb-12">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-blue-800">Active Sellers</h2>
+                <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                  {data.acceptedSellers.length} active
+                </span>
+              </div>
+              {data.acceptedSellers.length > 0 ? (
+                <DataTable items={data.acceptedSellers} type="seller" />
+              ) : (
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-blue-100 text-center">
+                  <p className="text-gray-500">No active sellers found.</p>
+                </div>
+              )}
+            </section>
+          </>
+        )}
+
+        {activeTab === 'all' && (
+          <>
+            <section className="mb-12">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-blue-800">All Producers</h2>
+                <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                  {data.allProducers.length} total
+                </span>
+              </div>
+              {data.allProducers.length > 0 ? (
+                <DataTable items={data.allProducers} type="producer" showActions={false} />
+              ) : (
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-blue-100 text-center">
+                  <p className="text-gray-500">No producers found.</p>
+                </div>
+              )}
+            </section>
+
+            <section className="mb-12">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-blue-800">All Sellers</h2>
+                <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                  {data.allSellers.length} total
+                </span>
+              </div>
+              {data.allSellers.length > 0 ? (
+                <DataTable items={data.allSellers} type="seller" showActions={false} />
+              ) : (
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-blue-100 text-center">
+                  <p className="text-gray-500">No sellers found.</p>
+                </div>
+              )}
+            </section>
+          </>
+        )}
       </div>
     </div>
   );

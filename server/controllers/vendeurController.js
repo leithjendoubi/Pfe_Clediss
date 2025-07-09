@@ -21,14 +21,15 @@ export const addVendeur = async (req, res) => {
       categorieProduitMarche,
       nometprenomlegal,
       Marchpardefaut,
-      adressDeStockage
+      adressDeStockage,
+      typeDesVendeurs,
     } = req.body;
     
     const userId = req.body.userId;
 
     // Basic field validation
     if (!userId || !numeroPhone || !adressProfessionnel || 
-        !categorieProduitMarche || !nometprenomlegal || !Marchpardefaut || !adressDeStockage) {
+        !categorieProduitMarche || !nometprenomlegal || !Marchpardefaut || !adressDeStockage || !typeDesVendeurs) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
@@ -75,7 +76,8 @@ export const addVendeur = async (req, res) => {
       nometprenomlegal,
       Marchpardefaut,
       documents: documentsMap,
-      adressDeStockage
+      adressDeStockage,
+      typeDesVendeurs,      
     });
 
     await newVendeur.save();
@@ -193,6 +195,22 @@ export const getDemandsVendeurs = async (req, res) => {
     });
   }
 };
+
+export const getallvenders = async (req, res) => {
+  try {
+    const demandsVendeurs = await Vendeur.find({ 
+    });
+
+    res.status(200).json(demandsVendeurs || []);  // Ensure always returning an array
+  } catch (error) {
+    console.error("Error fetching vendeurs:", error);
+    res.status(500).json({ 
+      message: "Error fetching pending vendeurs",
+      error: error.message 
+    });
+  }
+};
+
 
 export const getAcceptedDemandsVendeurs = async (req, res) => {
   try {

@@ -9,6 +9,7 @@ import {
   getProducteurDataByUserId,
   deleteProducteur,
   stopProducteur,
+  getAllProducers,
 } from "../controllers/producteurController.js";
 import upload from "../middleware/multer.js";
 
@@ -30,6 +31,7 @@ producteurRouter.post("/", upload.fields(documentFields), addProducteur);
 
 producteurRouter.get("/demands", getDemandProducteurs);
 producteurRouter.get("/demandsaccepted", getDemandProducteursaccepted);
+producteurRouter.get("/getall", getAllProducers);
 
 // Accept producteur demande
 producteurRouter.put("/:producteurId/accept-demande", acceptStatutDemande);
@@ -42,7 +44,7 @@ producteurRouter.put("/:producteurId/refuse-demande", refusStatutDemande);
 producteurRouter.get("/data/:userId", getProducteurDataByUserId);
 
 // Get producteur statuses by userId
-producteurRouter.get("/status/:userId", userIsProducteur);
+producteurRouter.get("/statut/:userId", userIsProducteur);
 producteurRouter.delete("/:producteurId", deleteProducteur);
 
 

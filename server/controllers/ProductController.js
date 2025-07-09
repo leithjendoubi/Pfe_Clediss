@@ -2,6 +2,49 @@ import { v2 as cloudinary } from "cloudinary";
 import productModel from "../models/productModel.js";
 import fs from "fs";
 
+
+
+
+
+
+const productIsValid = async ({ userId, category, marcheID, subCategory, sizes }) => {
+  try {
+    // Check if marcheID is not null or 'aucun marche'
+    if (marcheID && marcheID !== 'aucun marche') {
+      return { valid: true };
+    }
+
+    // Check if category is 'أسمدة فلاحية' or 'دواجن و منتوجاتها'
+    if (category === 'أسمدة فلاحية' || category === 'دواجن و منتوجاتها') {
+      return { valid: true };
+    }
+
+    // Find products with the given userId and subCategory
+    const products = await productModel.find({ 
+      userId: userId, 
+      subCategory: subCategory 
+    });
+
+    // If no products found with the subCategory, return true
+    if (products.length === 0) {
+      return { valid: true };
+    }
+
+    // If none of the above conditions are met, return false
+    return {
+      valid: false,
+      message: 'un marché doit etre choisi'
+    };
+
+  } catch (error) {
+    return {
+      valid: false,
+      message: error.message
+    };
+  }
+};
+
+
 // Function to add a product
 export const createProduct = async (req, res) => {
   try {
@@ -20,6 +63,15 @@ export const createProduct = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "A product image is required"
+      });
+    }
+
+    // Validate product using productIsValid
+    const validationResult = await productIsValid({ userId, category, marcheID, subCategory, sizes });
+    if (!validationResult.valid) {
+      return res.status(400).json({
+        success: false,
+        message: validationResult.message || "Product validation failed"
       });
     }
 
@@ -99,6 +151,25 @@ export const getUserProducts = async (req, res) => {
     });
   }
 };
+
+
+export const getProductsWithEmptyMarcheID = async (req, res) => {
+  try {
+    const products = await productModel.find({ marcheID: "aucun marche" });
+    
+    res.status(200).json({
+      success: true,
+      products
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+
 
 // Get single product by ID
 export const getProductById = async (req, res) => {
@@ -195,7 +266,6 @@ export const updateProduct = async (req, res) => {
 // Delete a product
 export const deleteProduct = async (req, res) => {
   try {
-    const userId = req.body.userId; // From auth middleware
     const productId = req.params.id;
     
     // First find the product to verify ownership
@@ -208,13 +278,7 @@ export const deleteProduct = async (req, res) => {
       });
     }
     
-    // Check if the user owns this product
-    if (product.userId !== userId) {
-      return res.status(403).json({
-        success: false,
-        message: "Unauthorized to delete this product"
-      });
-    }
+
     
     // Delete images from Cloudinary
     for (const img of product.image) {
@@ -251,6 +315,11 @@ export const getProductsByCategory = async (req, res) => {
     });
   }
 };
+
+
+
+
+
 
 // Get products by marcheID
 export const getProductsByMarcheID = async (req, res) => {

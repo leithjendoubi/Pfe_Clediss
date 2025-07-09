@@ -14,7 +14,7 @@ const Header = () => {
       />
 
       <h1 className="flex items-center gap-2 text-xl sm:text-3xl font-medium">
-        Hey {userData ? userData.name : "Developer"}!
+        عسلامة {userData ? userData.name : "Developer"}!
         <img
           className="w-8 aspect-square"
           src={assets.hand_wave}
@@ -23,14 +23,13 @@ const Header = () => {
       </h1>
 
       <h2 className="text-3xl sm:text-5xl font-semibold mb-4">
-        Welcome to our app
+        مرحبا بيك 
       </h2>
       <p className="mb-8 max-w-md">
-        Let's start with a quick product tour and we will have you up and
-        running in no time!
+تمت إضافتك بصفة مستهلك نهائي ، يمكنك تغيير صفتك للحصول على أكثر خدمات
       </p>
       <button className="border border-gray-500 rounded-full px-8 py-2.5 hover:bg-gray-100 transition-all">
-        Get Started
+        ملفك الشخصي
       </button>
     </div>
   );

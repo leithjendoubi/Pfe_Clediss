@@ -166,6 +166,52 @@ export const getlivreuraccepte = async (req, res) => {
   }
 };
 
+
+export const getLivreurAccepteByUserId = async (req, res) => {
+  try {
+    const { userId } = req.params; // Assuming userId is passed as a URL parameter
+    // or const { userId } = req.query; // If userId is passed as a query parameter
+
+    const livreur = await livreurModel.findOne({ 
+      userId: userId, 
+      statutDemande: "Accepté" 
+    });
+
+    res.status(200).json({
+      success: true,
+      data: !!livreur // Returns true if livreur exists, false otherwise
+    });
+  } catch (error) {
+    console.error("Error checking accepted livreur:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message
+    });
+  }
+};
+
+
+
+export const isLivreurAccepted = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const exists = await livreurModel.exists({
+      userId: userId,
+      statutDemande: "Accepté"
+    });
+
+    res.status(200).json(!!exists); // Directly return true or false
+  } catch (error) {
+    console.error("Error checking livreur status:", error);
+    res.status(500).json(false); // Return false in case of error
+  }
+};
+
+
+
+
 // Reject a livreur demand (additional useful method)
 export const rejectdemande = async (req, res) => {
   try {

@@ -17,6 +17,9 @@ import producteurRouter from "./routes/producteurRouter.js";
 import vendeurRouter from "./routes/vendeurRouter.js";
 import maprouter from "./routes/mapRouter.js";
 import offrerouter from "./routes/offreRoute.js";
+import stockisteRouter from "./routes/stockisteRouter.js";
+import equipementRouter from "./routes/equipementRoute.js";
+import stockrouter from "./routes/stockRoute.js";
 
 
 
@@ -36,10 +39,13 @@ app.use(cookieParser());
 app.get("/", (req, res) => res.send("API Working"));
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
+app.use("/api/equipement",equipementRouter);
 app.use("/api/product", Productrouter);
 app.use("/api/cart", cartRouter);
+app.use("/api/stockiste", stockisteRouter);
 app.use("/api/order", orderrouter);
-app.use("/api/map",maprouter)
+app.use("/api/stock",stockrouter);
+app.use("/api/map",maprouter);
 app.use("/api/livreur", livreurRouter);
 app.use("/api/administration", administrationrouter);
 app.use("/api/marche",marcheRouter);

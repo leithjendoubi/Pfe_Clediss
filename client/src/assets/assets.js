@@ -14,12 +14,18 @@ import upload_area from './upload_area.png'
 import firma from './firma.png'
 import elfirma from './elfirma.png'
 import tunisianflag from './tunisianflag.jpg'
+import product from './product.png'
+import stockicon from './stockicon.png'
+import mandat from './mandat.png'
+import livreuricon from './livreuricon.png'
 
 export const assets = {
     arrow_icon,
     lock_icon,
     livraison_icon,
     logo,
+    product,
+    stockicon,
     activities_icon,
     mail_icon,
     marche_icon,
@@ -27,9 +33,11 @@ export const assets = {
     notification_icon,
     hand_wave,
     header_img,
+    livreuricon,
     maps_icon,
     upload_area,
     firma,
     elfirma,
-    tunisianflag
+    tunisianflag,
+    mandat,
 }

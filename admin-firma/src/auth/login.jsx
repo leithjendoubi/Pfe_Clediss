@@ -22,7 +22,7 @@ const LoginAdmin = () => {
       });
 
       if (response.data.success) {
-        navigate('/dashboard');
+        navigate('/administration');
       } else {
         setError(response.data.message || 'Login failed');
       }
@@ -92,7 +92,7 @@ const LoginAdmin = () => {
         <p className="text-gray-400 text-center text-xs mt-6">
           Not an admin?{' '}
           <span
-            onClick={() => navigate('/login')}
+            onClick={() => navigate('/')}
             className="text-blue-400 cursor-pointer underline"
           >
             Go to user login

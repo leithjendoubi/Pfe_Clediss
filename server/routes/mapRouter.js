@@ -28,6 +28,6 @@ maprouter.get('/order/:orderId', getOrderAddressById);
 maprouter.get('/stock/:stockId', getStockAddressById);
 
 // Get all addresses
-maprouter.get('/all', getAllAddresses);
+maprouter.get('/getall', getAllAddresses);
 
 export default maprouter;

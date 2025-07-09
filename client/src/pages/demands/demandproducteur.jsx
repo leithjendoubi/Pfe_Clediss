@@ -3,6 +3,8 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { AppContext } from '../../context/AppContext';
 import tunisianFlag from '../../assets/tunisianflag.jpg';
+import carteInstruction from '../../assets/carteinstruction.jpeg';
+import loiDescCartes from '../../assets/loidescartes.jpeg';
 
 const DOCUMENT_TYPES = {
   STORAGE_CERTIFICATE: "شهادة التخزين",
@@ -176,9 +178,60 @@ const DemandProducteur = () => {
           {/* Regulatory Information Card */}
           <div className="bg-blue-100 rounded-xl shadow-sm p-6">
             <h2 className="text-lg font-semibold text-blue-900 mb-4">اللوائح القانونية</h2>
-            <p className="text-gray-700 text-sm leading-relaxed" style={{ fontFamily: "'Amiri', serif" }}>
-              * فصل عدد 6 : يمنع تجميع ونقل وخزن المنتجات الفلاحية والصيد دون الحصول على الصفة
-            </p>
+            <div className="text-gray-700 text-sm leading-relaxed" style={{ fontFamily: "'Amiri', serif" }}>
+              <p className="mb-2">في إطار أحكام القانون عدد 86 لتنظيم مسالك التوزيع و الإنتاج الفلاحي و الصيد البحري :</p>
+              
+              <p className="mb-2">* يمنع تجميع ونقل وخزن المنتجات الفلاحية والصيد دون الحصول على الصفة</p>
+              
+              <p className="mb-2">يخولك إمتلاك صفة منتج عرض منتوجاتك في الأسواق المنظمة الإدارية حسب ما يضبطه قانون التوزيع</p>
+              
+              <p className="mb-2">يخولك لك أيضا الحصول على بطاقة دخول بيضاء و حمراء</p>
+              
+              <p className="mb-2">في صورة الحصول على إحدى البطاقات الرجاء الإستضهار بها في خانة الصفة</p>
+              
+              <p className="mb-2">في صورة ما إذا كان نشاطك التجاري من فئة الأسمدة الفلاحية الرجاء الإستظهار بتصريح ممارسة النشاط</p>
+              
+              <p className="mb-2">في صورة ما إذا كان نشاطك التجاري من فئة الدواجن و منتوجاتها الرجاء الإستظهار بتصريح ممارسة النشاط</p>
+              
+              <p className="mb-2 font-semibold text-dark-blue" style={{ color: 'darkblue' }}>أنقر هنا :</p>
+              
+              <div className="space-y-2 mt-4">
+                <a href={carteInstruction} 
+   target="_blank" 
+   rel="noopener noreferrer"
+   className="block text-blue-600 hover:underline">
+  بطاقة الإرشادات للحصول على بطاقة دخول
+</a>
+                
+<a href={loiDescCartes} 
+   target="_blank" 
+   rel="noopener noreferrer"
+   className="block text-blue-600 hover:underline">
+  قانون وزارة التجارة المنظم لبطاقات الدخول
+</a>
+                
+                <a href="https://idaraty.tn/publications/jort-1994-058-b564" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   className="block text-blue-600 hover:underline">
+                  قانون عدد 86 لسنة 1994 المنظم لمسالك التوزيع المنتوجات الفلاحية و الصيد البحري
+                </a>
+                
+                <a href="http://www.sicad.gov.tn/Ar/upload/1438773909.pdf" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   className="block text-blue-600 hover:underline">
+                  كراس شروط تنظيم تجارة توزيع الأسمدة الفلاحية
+                </a>
+                
+                <a href="http://www.sicad.gov.tn/Ar/upload/1438692659.pdf"  
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   className="block text-blue-600 hover:underline">
+                  كراس شروط تنظيم تجارة الدواجن و منتوجاتها
+                </a>
+              </div>                                        
+            </div>
           </div>
 
           {/* Form Section */}
@@ -381,7 +434,9 @@ const DemandProducteur = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting || isLoadingCategories || isLoadingProducerTypes}
-                  className={`w-full py-2.5 px-4 rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-colors ${isSubmitting || isLoadingCategories || isLoadingProducerTypes ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`w-full py-2.5 px-4 rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-colors ${
+                    isSubmitting || isLoadingCategories || isLoadingProducerTypes ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
                 >
                   {isSubmitting ? 'جارٍ التقديم...' : 'تقديم طلب التسجيل'}
                 </button>

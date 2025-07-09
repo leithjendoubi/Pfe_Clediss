@@ -39,7 +39,6 @@ const MarcheAdmin = () => {
     try {
       await axios.post('http://localhost:4000/api/marche/add', formData);
       alert('تم إضافة السوق بنجاح!');
-
     } catch (error) {
       console.error('خطأ في إضافة السوق:', error);
       alert('حدث خطأ أثناء إضافة السوق');
@@ -47,193 +46,105 @@ const MarcheAdmin = () => {
   };
 
   return (
-    <div style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      minHeight: '100vh',
-      backgroundColor: '#f5f5f5',
-      fontFamily: 'Cairo, sans-serif'
-    }}>
-      <div style={{
-        width: '90%',
-        maxWidth: '500px',
-        padding: '2rem',
-        backgroundColor: 'white',
-        borderRadius: '8px',
-        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-        direction: 'rtl'
-      }}>
-        <h1 style={{
-          direction: 'rtl',
-          fontFamily: 'Cairo',
-          color: '#2c3e50',
-          textAlign: 'center',
-          marginBottom: '2rem',
-          fontWeight: '600'
-        }}>
+    <div className="min-h-screen bg-blue-50 flex items-center justify-center p-4 font-sans">
+      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6 text-right">
+        <h1 className="text-2xl font-semibold text-blue-800 mb-6 text-center">
           إضافة سوق جديد
         </h1>
         
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div className="coolinput">
-            <label htmlFor="jourCongé" className="text" style={{ 
-              direction: 'rtl', 
-              fontFamily: 'Cairo',
-              color: '#2c3e50',
-              fontWeight: '500'
-            }}>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <label htmlFor="jourCongé" className="block text-sm font-medium text-blue-700">
               يوم الإغلاق:
             </label>
             <select
               id="jourCongé"
               name="jourCongé"
-              className="input"
               value={formData.jourCongé}
               onChange={handleChange}
               required
-              style={{ 
-                direction: 'rtl', 
-                fontFamily: 'Cairo',
-                padding: '0.75rem'
-              }}
+              className="w-full p-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">اختر يوم الإغلاق</option>
               {joursSemaine.map((jour, index) => (
-                <option key={index} value={jour} style={{ direction: 'rtl' }}>{jour}</option>
+                <option key={index} value={jour}>{jour}</option>
               ))}
             </select>
           </div>
 
-          <div className="coolinput">
-            <label htmlFor="typeDeMarche" className="text" style={{ 
-              direction: 'rtl', 
-              fontFamily: 'Cairo',
-              color: '#2c3e50',
-              fontWeight: '500'
-            }}>
+          <div className="space-y-2">
+            <label htmlFor="typeDeMarche" className="block text-sm font-medium text-blue-700">
               نوع السوق:
             </label>
             <select
               id="typeDeMarche"
               name="typeDeMarche"
-              className="input"
               value={formData.typeDeMarche}
               onChange={handleChange}
               required
-              style={{ 
-                direction: 'rtl', 
-                fontFamily: 'Cairo',
-                padding: '0.75rem'
-              }}
+              className="w-full p-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">اختر نوع السوق</option>
               {typesMarche.map((type, index) => (
-                <option key={index} value={type} style={{ direction: 'rtl' }}>{type}</option>
+                <option key={index} value={type}>{type}</option>
               ))}
             </select>
           </div>
 
-          <div className="coolinput">
-            <label htmlFor="cité" className="text" style={{ 
-              direction: 'rtl', 
-              fontFamily: 'Cairo',
-              color: '#2c3e50',
-              fontWeight: '500'
-            }}>
+          <div className="space-y-2">
+            <label htmlFor="cité" className="block text-sm font-medium text-blue-700">
               المدينة:
             </label>
             <input
               type="text"
               id="cité"
               name="cité"
-              className="input"
               placeholder="أدخل اسم المدينة"
               value={formData.cité}
               onChange={handleChange}
               required
-              style={{ 
-                direction: 'rtl', 
-                fontFamily: 'Cairo',
-                padding: '0.75rem'
-              }}
+              className="w-full p-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
 
-          <div className="coolinput">
-            <label htmlFor="nomComplet" className="text" style={{ 
-              direction: 'rtl', 
-              fontFamily: 'Cairo',
-              color: '#2c3e50',
-              fontWeight: '500'
-            }}>
+          <div className="space-y-2">
+            <label htmlFor="nomComplet" className="block text-sm font-medium text-blue-700">
               الاسم الكامل:
             </label>
             <input
               type="text"
               id="nomComplet"
               name="nomComplet"
-              className="input"
               placeholder="أدخل الاسم الكامل للسوق"
               value={formData.nomComplet}
               onChange={handleChange}
               required
-              style={{ 
-                direction: 'rtl', 
-                fontFamily: 'Cairo',
-                padding: '0.75rem'
-              }}
+              className="w-full p-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
 
-          <div className="coolinput">
-            <label htmlFor="categorieMarche" className="text" style={{ 
-              direction: 'rtl', 
-              fontFamily: 'Cairo',
-              color: '#2c3e50',
-              fontWeight: '500'
-            }}>
+          <div className="space-y-2">
+            <label htmlFor="categorieMarche" className="block text-sm font-medium text-blue-700">
               الفئة:
             </label>
             <select
               id="categorieMarche"
               name="categorieMarche"
-              className="input"
               value={formData.categorieMarche}
               onChange={handleChange}
               required
-              style={{ 
-                direction: 'rtl', 
-                fontFamily: 'Cairo',
-                padding: '0.75rem'
-              }}
+              className="w-full p-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">اختر فئة السوق</option>
               {categories.map((categorie, index) => (
-                <option key={index} value={categorie} style={{ direction: 'rtl' }}>{categorie}</option>
+                <option key={index} value={categorie}>{categorie}</option>
               ))}
             </select>
           </div>
 
           <button 
             type="submit"
-            style={{
-              padding: '0.75rem',
-              backgroundColor: '#818CF8',
-              color: 'white',
-              border: 'none',
-              borderRadius: '5px',
-              cursor: 'pointer',
-              fontSize: '1rem',
-              fontWeight: '600',
-              marginTop: '1rem',
-              fontFamily: 'Cairo',
-              direction: 'rtl',
-              transition: 'background-color 0.3s',
-              ':hover': {
-                backgroundColor: '#6b75d6'
-              }
-            }}
+            className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition duration-200"
           >
             إضافة
           </button>

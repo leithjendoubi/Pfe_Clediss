@@ -275,6 +275,21 @@ export const getDemandProducteurs = async (req, res) => {
   }
 };
 
+
+export const getAllProducers = async (req, res) => {
+  try {
+    const allProducteurs = await Producteur.find({});
+    
+    res.status(200).json(allProducteurs || []);
+  } catch (error) {
+    res.status(500).json({ 
+      message: "Error fetching all producteurs",
+      error: error.message 
+    });
+  }
+};
+
+
 export const getDemandProducteursaccepted = async (req, res) => {
   try {
     const acceptedProducteurs = await Producteur.find({ 

@@ -12,7 +12,11 @@ const orderSchema = new mongoose.Schema({
   status: { type: String, default: "Order Placed" },
   paymentMethod: { type: String, required: true },
   paymentStatut: { type: String, default: "waiting" },
-  date: { type: Date, default: Date.now }
+  date: { type: Date, default: Date.now },
+    userConfirmations: {
+    type: [[mongoose.Schema.Types.Mixed]],
+    default: [],
+  },
 });
 
 const orderModel = mongoose.models.Order || mongoose.model("Order", orderSchema);

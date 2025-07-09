@@ -9,6 +9,8 @@ const vendeurSchema = new mongoose.Schema({
     type: Number, 
     required: true 
   },
+
+
   adressProfessionnel: { 
     type: String, 
     required: true 
@@ -28,6 +30,11 @@ const vendeurSchema = new mongoose.Schema({
   },
   documents: { 
     type: Map, 
+    required: true 
+  },
+
+    typeDesVendeurs: { 
+    type: String, 
     required: true 
   },
   adressDeStockage: { 
