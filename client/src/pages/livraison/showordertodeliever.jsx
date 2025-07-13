@@ -19,7 +19,7 @@ const ShowOrderToDeliver = () => {
     const fetchOrders = async () => {
       try {
         // Fetch orders
-        const ordersResponse = await axios.get('http://localhost:4000/api/order/get');
+        const ordersResponse = await axios.get('http://localhost:4000/api/order/waiting-livreur');
         const ordersData = ordersResponse.data;
 
         // Fetch product details for each product ID

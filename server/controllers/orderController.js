@@ -156,14 +156,7 @@ export const getOrdersByUserId = async (req, res) => {
   try {
     const { userId } = req.params;
     const orders = await orderModel.find({ userId });
-
-    if (!orders || orders.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No orders found for this user" });
-    }
-
-    res.json(orders);
+    res.json(orders || []);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -261,12 +254,7 @@ export const updateUserConfirmationStatus = async (req, res) => {
 export const getOrdersWithWaitingLivreur = async (req, res) => {
   try {
     const waitingOrders = await orderModel.find({ livreurId: "waiting" });
-
-    if (!waitingOrders || waitingOrders.length === 0) {
-      return res.status(404).json({ message: "No orders waiting for livreur" });
-    }
-
-    res.json(waitingOrders);
+    res.json(waitingOrders || []);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -349,6 +337,27 @@ export const getOrderById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+
+export const deleteOrderById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const order = await orderModel.findByIdAndDelete(id);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res.json({ message: "Order deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
 
 export const getOrdersByLivreurId = async (req, res) => {
   try {

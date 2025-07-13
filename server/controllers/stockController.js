@@ -80,11 +80,7 @@ export const getStockByUserId = async (req, res) => {
   }
 };
 
-/**
- * Retrieves stock entries by stockeurId.
- * @param {Object} req - The request object, containing the stockeurId in req.params.stockeurId.
- * @param {Object} res - The response object.
- */
+
 export const getStockByStockeurId = async (req, res) => {
   try {
     const stocks = await stockModel.find({ stockeurId: req.params.stockeurId });
@@ -98,13 +94,7 @@ export const getStockByStockeurId = async (req, res) => {
   }
 };
 
-// --- Update Operations ---
 
-/**
- * Updates an existing stock entry.
- * @param {Object} req - The request object, containing the stock ID in req.params.id and update data in req.body.
- * @param {Object} res - The response object.
- */
 export const updateStock = async (req, res) => {
   try {
     const updatedStock = await stockModel.findByIdAndUpdate(
@@ -122,13 +112,8 @@ export const updateStock = async (req, res) => {
   }
 };
 
-// --- Delete Operations ---
 
-/**
- * Deletes a stock entry.
- * @param {Object} req - The request object, containing the stock ID in req.params.id.
- * @param {Object} res - The response object.
- */
+
 export const deleteStock = async (req, res) => {
   try {
     const deletedStock = await stockModel.findByIdAndDelete(req.params.id);

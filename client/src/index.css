@@ -77,6 +77,9 @@ html {
 .submit-btn:hover {
   background-color: #6b75d6;
 }
+body {
+  font-family: 'Cairo', sans-serif;
+}
 
 .arabic-text {
   font-family: 'Cairo', sans-serif;

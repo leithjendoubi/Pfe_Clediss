@@ -25,6 +25,8 @@ import Marcheallproducts from "./pages/marche/Marchedesproducteur";
 import Livreur from "./pages/livraison/Livreurs";
 import ToDeliver from "./pages/livraison/ordertodeliever";
 import VendeurList from "./pages/marche/venders";
+import Showproducer from "./pages/map/showproducers";
+
 
 import ShowOrderToDeliver from "./pages/livraison/showordertodeliever";
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -58,6 +60,7 @@ const App = () => {
           <Route path="/addlivreur" element={<AddLivreur/>}/>
           <Route path="/Marche" element={<Marche />} />       
           <Route path="/CartPage" element={<CartPage />} />
+          <Route path="/showmap" element={<Showproducer />} />          
           <Route path="/email-verify" element={<EmailVerify />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/todeliver" element={<ToDeliver />} />          

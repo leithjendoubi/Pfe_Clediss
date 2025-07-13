@@ -38,6 +38,11 @@ const Sidebar = () => {
       icon: <i className="fas fa-boxes"></i>,
       label: <Link to="/treatproducts">المنتجات</Link>,
     },
+        {
+      key: "6",
+      icon: <i className="fas fa-orders"></i>,
+      label: <Link to="/orders">طلبيات</Link>,
+    }
   ];
 
   return (

@@ -10,14 +10,14 @@ const Sidebar = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   const menuItems = [
-    { name: "Products", path: "/Marche", icon: assets.product },
-    { name: "Marché des producteurs", path: "/allproducts", icon: assets.marche_icon },
-    { name: "Marché Réglémenté", path: "/Market", icon: assets.marche_icon },
-    { name: "My Stocks", path: "/Stockeur", icon: assets.stockicon },     
-    { name: "Maps", path: "/map", icon: assets.maps_icon },
-    { name: "find livreur", path: "/livreurs", icon: assets.livreuricon },
+    { name: "منتجات عامة ", path: "/Marche", icon: assets.product },
+    { name: "منتجات عامة و بالجملة", path: "/allproducts", icon: assets.marche_icon },
+    { name: "الأسواق الإدارية", path: "/Market", icon: assets.marche_icon },
+    { name: "المخزنون", path: "/Stockeur", icon: assets.stockicon },     
+    { name: "خريطة الإنتاج", path: "/showmap", icon: assets.maps_icon },
+    { name: "عروض توصيل", path: "/livreurs", icon: assets.livreuricon },
     { name: "Order to deliever", path: "/showorder", icon: assets.livraison_icon },
-    { name: "Mandat", path: "/venderlist", icon: assets.mandat },
+    { name: "تواكيل بيع بالجملة", path: "/venderlist", icon: assets.mandat },
   ];
 
   useEffect(() => {
@@ -43,8 +43,8 @@ const Sidebar = () => {
       {/* Empty div to push content to center */}
       <div className="flex-grow"></div>
       
-      <div className="p-4 flex flex-col items-center justify-center">
-        <ul className="space-y-6 w-full">
+      <div className="p-6 flex flex-col items-center justify-center">
+        <ul className="space-y-1 w-full">
           {menuItems.map((item, index) => (
             <li key={index}>
               <button

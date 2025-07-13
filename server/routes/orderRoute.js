@@ -10,7 +10,8 @@ import {
   getOrderById,
   getOrdersByLivreurId,
   setListOfUsersToConfirm,
-  updateUserConfirmationStatus
+  updateUserConfirmationStatus,
+  deleteOrderById
 } from "../controllers/orderController.js";
 
 const orderrouter = express.Router();
@@ -25,5 +26,6 @@ orderrouter.put("/update-status/:id", updateStatut);
 orderrouter.put("/confirm/:id", updateUserConfirmationStatus);
 orderrouter.get("/get", getAllOrders);
 orderrouter.get("/:id", getOrderById);
+orderrouter.delete("/:id", deleteOrderById);
 orderrouter.get("/orders/:livreurId", getOrdersByLivreurId);
 export default orderrouter;

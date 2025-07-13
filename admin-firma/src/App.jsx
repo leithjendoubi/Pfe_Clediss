@@ -5,6 +5,7 @@ import ShowMarchéAdmin from './marches/ShowMarchéAdmin';
 import TreatDemand from './livraison/treatdemand';
 import ProducteurVendeur from './administration/treatdemandusers';
 import TreatProducts from './Products/treatproduct';
+import Orders from './orders/orders'
 import { Routes, Route } from "react-router-dom";
 import './App.css';
 
@@ -18,7 +19,9 @@ function App() {
       <Route path="/marche" element={<ShowMarchéAdmin />} />  
       <Route path="/livreurDemand" element={<TreatDemand />} />
       <Route path="/demandofusers" element={<ProducteurVendeur />} />   
-      <Route path="/treatproducts" element={<TreatProducts />} />       
+      <Route path="/treatproducts" element={<TreatProducts />} />
+      <Route path="/orders" element={<Orders />} />
+
     </Routes>
   );
 }

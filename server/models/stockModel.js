@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
-const stockSchema = new mongoose.Schema({
-  stockeurId: { type: String, required: true }, 
+const stockSchema = new mongoose.Schema({ 
   userId: { type: String, required: true },
   equipementId: { type: String, required: true },
   dateentre: { type: Date ,  required: true }, 

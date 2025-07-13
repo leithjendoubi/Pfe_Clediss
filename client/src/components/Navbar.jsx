@@ -1,4 +1,3 @@
-//
 import React, { useContext, useState } from "react";
 import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
@@ -13,21 +12,6 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { userData, backendUrl, setUserData, setIsLoggedin } = useContext(AppContext);
   const [showCart, setShowCart] = useState(false);
-
-  const sendVerificationOtp = async () => {
-    try {
-      axios.defaults.withCredentials = true;
-      const { data } = await axios.post(backendUrl + "/api/auth/send-verify-otp");
-      if (data.success) {
-        navigate("/email-verify");
-        toast.success(data.message);
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      toast.error(error.message);
-    }
-  };
 
   const logout = async () => {
     try {
@@ -48,13 +32,11 @@ const Navbar = () => {
   };
 
   const navItems = [
-    { name: "Acceuil", path: "/Home" },   
-    { name: "My Profile", path: "/myprofil" },
-    { name: "Support", path: "/Home" },
-    { name: "About", path: "/Home" },
-    
-    { name: "Verify", action: sendVerificationOtp, condition: !userData?.isAccountVerified },
-    { name: "Logout", action: logout },
+    { name: "<strong>الرئيسية</strong>", path: "/Home" },   
+    { name: "<strong>ملفي الشخصي</strong>", path: "/myprofil" },
+    { name: "<strong>اتصل بنا</strong>", path: "/Home" },
+    { name: "<strong>من نحن</strong>", path: "/Home" },
+    { name: "<strong>تسجيل الخروج</strong>", action: logout },
   ];
 
   return (
@@ -75,9 +57,8 @@ const Navbar = () => {
                 key={index}
                 onClick={() => (item.action ? item.action() : navigate(item.path))}
                 className="px-3 py-2 text-blue-700 hover:text-blue-900 font-medium rounded-lg transition-all duration-300 hover:bg-blue-50/50"
-              >
-                {item.name}
-              </button>
+                dangerouslySetInnerHTML={{ __html: item.name }}
+              />
             );
           })}
 
@@ -106,7 +87,7 @@ const Navbar = () => {
               onClick={() => navigate("/login")}
               className="flex items-center gap-2 px-4 py-2 text-blue-700 font-medium rounded-lg hover:bg-blue-50/50 transition-all duration-300"
             >
-              Login <img src={assets.arrow_icon} alt="arrow" className="w-4 h-4" />
+              <strong>Login</strong> <img src={assets.arrow_icon} alt="arrow" className="w-4 h-4" />
             </button>
           )}
         </div>
