@@ -20,6 +20,7 @@ import offrerouter from "./routes/offreRoute.js";
 import stockisteRouter from "./routes/stockisteRouter.js";
 import equipementRouter from "./routes/equipementRoute.js";
 import stockrouter from "./routes/stockRoute.js";
+import mandatRouter from "./routes/mandatRouter.js";
 
 
 
@@ -39,6 +40,7 @@ app.use(cookieParser());
 app.get("/", (req, res) => res.send("API Working"));
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
+app.use("/api/mandat", mandatRouter);
 app.use("/api/equipement",equipementRouter);
 app.use("/api/product", Productrouter);
 app.use("/api/cart", cartRouter);

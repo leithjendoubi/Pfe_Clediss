@@ -10,42 +10,42 @@ const Orders = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        // Fetch all orders
+        // جلب جميع الطلبات
         const ordersResponse = await axios.get('http://localhost:4000/api/order/get');
         setOrders(ordersResponse.data);
 
-        // Extract all unique user IDs (customers and delivery persons)
+        // استخراج جميع معرّفات المستخدمين الفريدة (العملاء وموظفي التوصيل)
         const allUserIds = new Set();
         ordersResponse.data.forEach(order => {
-          allUserIds.add(order.userId); // Customer ID
+          allUserIds.add(order.userId); // معرّف العميل
           if (order.livreurId && order.livreurId !== 'waiting') {
-            allUserIds.add(order.livreurId); // Delivery person ID
+            allUserIds.add(order.livreurId); // معرّف موظف التوصيل
           }
         });
 
-        // Fetch user data for all unique IDs
+        // جلب بيانات المستخدم لجميع المعرّفات الفريدة
         const userDataPromises = Array.from(allUserIds).map(async userId => {
           try {
             const response = await axios.get(`http://localhost:4000/api/user/userdata/${userId}`);
             return {
               userId,
-              name: response.data.userData?.name || 'Unknown User',
+              name: response.data.userData?.name || 'مستخدم غير معروف',
               image: response.data.userData?.image
             };
           } catch (error) {
-            console.error(`Error fetching user data for ${userId}:`, error);
+            console.error(`خطأ في جلب بيانات المستخدم لـ ${userId}:`, error);
             return {
               userId,
-              name: 'Unknown User',
+              name: 'مستخدم غير معروف',
               image: null
             };
           }
         });
 
-        // Wait for all user data requests to complete
+        // انتظار اكتمال جميع طلبات بيانات المستخدم
         const userDataResults = await Promise.all(userDataPromises);
         
-        // Convert to a lookup object { userId: { name, image } }
+        // تحويل إلى كائن للبحث { userId: { name, image } }
         const userDataMap = {};
         userDataResults.forEach(user => {
           userDataMap[user.userId] = {
@@ -70,8 +70,8 @@ const Orders = () => {
       await axios.delete(`http://localhost:4000/api/order/${orderId}`);
       setOrders(orders.filter(order => order._id !== orderId));
     } catch (err) {
-      console.error('Error deleting order:', err);
-      alert('Failed to delete order. Please try again.');
+      console.error('خطأ في حذف الطلب:', err);
+      alert('فشل في حذف الطلب. يرجى المحاولة مرة أخرى.');
     }
   };
 
@@ -81,35 +81,35 @@ const Orders = () => {
   };
 
   const getUserInfo = (userId) => {
-    return userData[userId] || { name: 'Loading...', image: null };
+    return userData[userId] || { name: 'جاري التحميل...', image: null };
   };
 
   const getDeliveryPersonInfo = (livreurId) => {
     if (!livreurId || livreurId === 'waiting') {
-      return { name: 'Not assigned', image: null };
+      return { name: 'غير معيّن', image: null };
     }
-    return userData[livreurId] || { name: 'Loading...', image: null };
+    return userData[livreurId] || { name: 'جاري التحميل...', image: null };
   };
 
-  if (loading) return <div className="text-center py-8">Loading orders...</div>;
-  if (error) return <div className="text-center py-8 text-red-500">Error: {error}</div>;
+  if (loading) return <div className="text-center py-8">جاري تحميل الطلبات...</div>;
+  if (error) return <div className="text-center py-8 text-red-500">خطأ: {error}</div>;
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">All Orders</h1>
+      <h1 className="text-2xl font-bold mb-6">جميع الطلبات</h1>
       <div className="overflow-x-auto shadow-md sm:rounded-lg">
         <table className="min-w-full bg-white">
           <thead className="bg-gray-100">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Order ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Customer</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Items</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Total</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Address</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Delivery Person</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">معرف الطلب</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">العميل</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">المنتجات</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">المجموع</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">العنوان</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">موظف التوصيل</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">الحالة</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">التاريخ</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">إجراءات</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -136,13 +136,13 @@ const Orders = () => {
                     <ul className="list-disc pl-5 space-y-1">
                       {order.items.map((item, index) => (
                         <li key={index}>
-                          {item.name} - {item.quantity} {item.size} (${item.price} each)
+                          {item.name} - {item.quantity} {item.size} (د.ت {item.price} لكل واحد)
                         </li>
                       ))}
                     </ul>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    DT{order.amount}
+                    د.ت{order.amount}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500 max-w-[200px] truncate">
                     {order.address}
@@ -162,7 +162,9 @@ const Orders = () => {
                       ${order.status === 'Confirmed and Prepared' ? 'bg-green-100 text-green-800' :
                         order.status === 'Order Placed' ? 'bg-blue-100 text-blue-800' :
                         'bg-yellow-100 text-yellow-800'}`}>
-                      {order.status}
+                      {order.status === 'Confirmed and Prepared' ? 'تم التأكيد والتجهيز' :
+                       order.status === 'Order Placed' ? 'تم وضع الطلب' :
+                       order.status}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -173,7 +175,7 @@ const Orders = () => {
                       onClick={() => handleDelete(order._id)}
                       className="text-red-600 hover:text-red-900"
                     >
-                      Delete
+                      حذف
                     </button>
                   </td>
                 </tr>

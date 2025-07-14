@@ -26,6 +26,8 @@ import Livreur from "./pages/livraison/Livreurs";
 import ToDeliver from "./pages/livraison/ordertodeliever";
 import VendeurList from "./pages/marche/venders";
 import Showproducer from "./pages/map/showproducers";
+import Mandat from "./pages/marche/Mandat";
+import FindStockage from "./pages/stock/findstockage";
 
 
 import ShowOrderToDeliver from "./pages/livraison/showordertodeliever";
@@ -43,6 +45,7 @@ const App = () => {
           <Route path='/addorder' element={<AddOrder/>}/>
           <Route path="/Home" element={<Home />} />
           <Route path="/livreurs" element={<Livreur />} />
+          <Route path="/mandat" element={<Mandat />} />
           <Route path="/market" element={<Market />} />
           <Route path="/showorder" element={<ShowOrderToDeliver />} />
           <Route path="/addstockiste" element={<AddStockiste/>}/>
@@ -56,6 +59,7 @@ const App = () => {
           <Route path="/venderlist" element={<VendeurList/>}/>
           <Route path="/" element={<Home1 />} />
           <Route path="/demandproducteur" element={<DemandProducteur />} />
+          <Route path="/findStockage" element={<FindStockage />} />
           <Route path="/demandvendeur" element={<DemandVendeur />} />                      
           <Route path="/addlivreur" element={<AddLivreur/>}/>
           <Route path="/Marche" element={<Marche />} />       

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import defaultAvatar from '../assets/default-avatar.png'; // Ensure this exists in your project
+import defaultAvatar from '../assets/default-avatar.png'; // تأكد من وجود هذا الملف في مشروعك
 
 const API_BASE_URL = 'http://localhost:4000';
 
@@ -21,30 +21,30 @@ const LivreurManagement = () => {
     poidsMaximale: '',
   });
 
-  // Fetch user details for a specific livreur
+  // جلب تفاصيل المستخدم لساعي معين
   const fetchUserDetails = async (userId) => {
     try {
       const response = await axios.post(`${API_BASE_URL}/api/user/userdata`, { userId });
       if (response.status !== 200 || !response.data.success || !response.data.userData) {
-        throw new Error('Invalid user data response');
+        throw new Error('استجابة بيانات المستخدم غير صالحة');
       }
       return response.data.userData;
     } catch (error) {
-      console.error('Error fetching user details:', error);
+      console.error('خطأ في جلب تفاصيل المستخدم:', error);
       return {
-        name: 'Unknown User',
-        email: 'N/A',
+        name: 'مستخدم غير معروف',
+        email: 'غير متاح',
         image: defaultAvatar,
       };
     }
   };
 
-  // Fetch all pending demands
+  // جلب جميع طلبات الانتظار
   const fetchDemands = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/api/livreur/demande`);
       if (response.status === 200 && response.data.success) {
-        // Fetch user details for each demand
+        // جلب تفاصيل المستخدم لكل طلب
         const demandsWithDetails = await Promise.all(
           response.data.data.map(async (demand) => {
             const userDetail = await fetchUserDetails(demand.userId);
@@ -53,26 +53,26 @@ const LivreurManagement = () => {
         );
         setDemands(demandsWithDetails);
       } else {
-        throw new Error('Invalid demands response');
+        throw new Error('استجابة الطلبات غير صالحة');
       }
       setLoading((prev) => ({ ...prev, demands: false }));
     } catch (error) {
-      toast.error('Failed to fetch demands');
-      console.error('Error fetching demands:', error);
+      toast.error('فشل في جلب الطلبات');
+      console.error('خطأ في جلب الطلبات:', error);
       setLoading((prev) => ({ ...prev, demands: false }));
     }
   };
 
-  // Fetch all registered livreurs with their user details
+  // جلب جميع السعاة المسجلين مع تفاصيلهم
   const fetchRegisteredLivreurs = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/api/livreur/getall`);
       if (response.status !== 200 || !response.data.success || !Array.isArray(response.data.data)) {
-        throw new Error('Invalid livreurs response');
+        throw new Error('استجابة السعاة غير صالحة');
       }
       const livreurs = response.data.data;
 
-      // Fetch user details for each livreur
+      // جلب تفاصيل المستخدم لكل ساعي
       const livreursWithDetails = await Promise.all(
         livreurs.map(async (livreur) => {
           const userDetail = await fetchUserDetails(livreur.userId);
@@ -83,13 +83,13 @@ const LivreurManagement = () => {
       setRegisteredLivreurs(livreursWithDetails);
       setLoading((prev) => ({ ...prev, livreurs: false }));
     } catch (error) {
-      toast.error('Failed to fetch registered livreurs');
-      console.error('Error fetching livreurs:', error);
+      toast.error('فشل في جلب السعاة المسجلين');
+      console.error('خطأ في جلب السعاة:', error);
       setLoading((prev) => ({ ...prev, livreurs: false }));
     }
   };
 
-  // Handle accept modal open
+  // فتح نافذة قبول الساعي
   const openAcceptModal = (livreur) => {
     setCurrentLivreur(livreur);
     setFormData({
@@ -100,38 +100,38 @@ const LivreurManagement = () => {
     setAcceptModal(true);
   };
 
-  // Handle form input changes
+  // التعامل مع تغييرات إدخال النموذج
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Accept a demande
+  // قبول الطلب
   const handleAccept = async () => {
     try {
       const response = await axios.post(`${API_BASE_URL}/api/livreur/accept`, {
         ...formData,
         livreurId: currentLivreur._id,
       });
-      toast.success('Demand accepted successfully');
+      toast.success('تم قبول الطلب بنجاح');
       setAcceptModal(false);
-      fetchDemands(); // Refresh the demands list
-      fetchRegisteredLivreurs(); // Refresh the registered livreurs list
+      fetchDemands(); // تحديث قائمة الطلبات
+      fetchRegisteredLivreurs(); // تحديث قائمة السعاة المسجلين
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to accept demand');
-      console.error('Error accepting demand:', error);
+      toast.error(error.response?.data?.message || 'فشل في قبول الطلب');
+      console.error('خطأ في قبول الطلب:', error);
     }
   };
 
-  // Reject a demande
+  // رفض الطلب
   const handleReject = async (livreurId) => {
     try {
       const response = await axios.post(`${API_BASE_URL}/api/livreur/reject`, { livreurId });
-      toast.success('Demand rejected successfully');
-      fetchDemands(); // Refresh the demands list
+      toast.success('تم رفض الطلب بنجاح');
+      fetchDemands(); // تحديث قائمة الطلبات
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to reject demand');
-      console.error('Error rejecting demand:', error);
+      toast.error(error.response?.data?.message || 'فشل في رفض الطلب');
+      console.error('خطأ في رفض الطلب:', error);
     }
   };
 
@@ -140,7 +140,7 @@ const LivreurManagement = () => {
     fetchRegisteredLivreurs();
   }, []);
 
-  // Filter livreurs based on search term
+  // تصفية السعاة بناءً على مصطلح البحث
   const filteredLivreurs = registeredLivreurs.filter((livreur) => {
     const searchLower = searchTerm.toLowerCase();
     const user = livreur.userDetail || {};
@@ -155,10 +155,10 @@ const LivreurManagement = () => {
     );
   });
 
-  // View documents
+  // عرض المستندات
   const viewDocuments = (documents) => {
     if (!documents || !Array.isArray(documents) || documents.length === 0) {
-      return 'No documents';
+      return 'لا توجد مستندات';
     }
 
     return (
@@ -171,14 +171,14 @@ const LivreurManagement = () => {
             rel="noopener noreferrer"
             className="text-blue-500 hover:text-blue-700 transition-colors duration-200 block"
           >
-            View Document {index + 1}
+            عرض المستند {index + 1}
           </a>
         ))}
       </div>
     );
   };
 
-  // Loading state
+  // حالة التحميل
   if (loading.demands || loading.livreurs) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -189,11 +189,11 @@ const LivreurManagement = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
-      {/* Demands Section */}
+      {/* قسم الطلبات */}
       <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Pending Demands</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">الطلبات المعلقة</h1>
         {demands.length === 0 ? (
-          <p className="text-gray-600">No pending demands found</p>
+          <p className="text-gray-600">لا توجد طلبات معلقة</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -203,25 +203,25 @@ const LivreurManagement = () => {
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider"
                   >
-                    User Info
+                    معلومات المستخدم
                   </th>
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider"
                   >
-                    Contact
+                    الاتصال
                   </th>
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider"
                   >
-                    Documents
+                    المستندات
                   </th>
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider"
                   >
-                    Actions
+                    الإجراءات
                   </th>
                 </tr>
               </thead>
@@ -234,7 +234,7 @@ const LivreurManagement = () => {
                           <img
                             className="h-10 w-10 rounded-full"
                             src={demand.userDetail?.image || defaultAvatar}
-                            alt={demand.userDetail?.name || 'User'}
+                            alt={demand.userDetail?.name || 'مستخدم'}
                             onError={(e) => {
                               e.target.src = defaultAvatar;
                             }}
@@ -242,16 +242,16 @@ const LivreurManagement = () => {
                         </div>
                         <div className="ml-4">
                           <div className="text-sm font-medium text-gray-900">
-                            {demand.userDetail?.name || 'Unknown User'}
+                            {demand.userDetail?.name || 'مستخدم غير معروف'}
                           </div>
                           <div className="text-sm text-gray-500">
-                            {demand.userDetail?.email || 'N/A'}
+                            {demand.userDetail?.email || 'غير متاح'}
                           </div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{demand.telephone || 'N/A'}</div>
+                      <div className="text-sm text-gray-900">{demand.telephone || 'غير متاح'}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {viewDocuments(demand.documents)}
@@ -261,13 +261,13 @@ const LivreurManagement = () => {
                         onClick={() => openAcceptModal(demand)}
                         className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
                       >
-                        Accept
+                        قبول
                       </button>
                       <button
                         onClick={() => handleReject(demand._id)}
                         className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
                       >
-                        Reject
+                        رفض
                       </button>
                     </td>
                   </tr>
@@ -278,14 +278,14 @@ const LivreurManagement = () => {
         )}
       </div>
 
-      {/* Registered Livreurs Section */}
+      {/* قسم السعاة المسجلين */}
       <div>
         <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Registered Livreurs</h1>
-          <p className="text-gray-600">View and manage all registered delivery partners</p>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">السعاة المسجلون</h1>
+          <p className="text-gray-600">عرض وإدارة جميع شركاء التوصيل المسجلين</p>
         </div>
 
-        {/* Search Bar */}
+        {/* شريط البحث */}
         <div className="mb-6">
           <div className="relative rounded-md shadow-sm max-w-md">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -306,10 +306,10 @@ const LivreurManagement = () => {
             <input
               type="text"
               className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md p-3 border"
-              placeholder="Search by name, email, city or status..."
+              placeholder="ابحث بالاسم، البريد الإلكتروني، المدينة أو الحالة..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              aria-label="Search livreurs"
+              aria-label="ابحث عن السعاة"
             />
           </div>
         </div>
@@ -330,8 +330,8 @@ const LivreurManagement = () => {
                 d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <h3 className="mt-2 text-lg font-medium text-gray-900">No livreurs found</h3>
-            <p className="mt-1 text-gray-500">Try adjusting your search query.</p>
+            <h3 className="mt-2 text-lg font-medium text-gray-900">لا توجد نتائج</h3>
+            <p className="mt-1 text-gray-500">حاول تعديل استعلام البحث الخاص بك.</p>
           </div>
         ) : (
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
@@ -343,31 +343,31 @@ const LivreurManagement = () => {
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider"
                     >
-                      User Info
+                      معلومات المستخدم
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider"
                     >
-                      Contact
+                      الاتصال
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider"
                     >
-                      Capacity
+                      السعة
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider"
                     >
-                      Status
+                      الحالة
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider"
                     >
-                      Documents
+                      المستندات
                     </th>
                   </tr>
                 </thead>
@@ -380,7 +380,7 @@ const LivreurManagement = () => {
                             <img
                               className="h-10 w-10 rounded-full"
                               src={livreur.userDetail?.image || defaultAvatar}
-                              alt={livreur.userDetail?.name || 'User'}
+                              alt={livreur.userDetail?.name || 'مستخدم'}
                               onError={(e) => {
                                 e.target.src = defaultAvatar;
                               }}
@@ -388,26 +388,26 @@ const LivreurManagement = () => {
                           </div>
                           <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900">
-                              {livreur.userDetail?.name || 'Unknown User'}
+                              {livreur.userDetail?.name || 'مستخدم غير معروف'}
                             </div>
                             <div className="text-sm text-gray-500">
-                              {livreur.userDetail?.email || 'N/A'}
+                              {livreur.userDetail?.email || 'غير متاح'}
                             </div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{livreur.telephone || 'N/A'}</div>
-                        <div className="text-sm text-gray-500">{livreur.citeprincipale || 'N/A'}</div>
+                        <div className="text-sm text-gray-900">{livreur.telephone || 'غير متاح'}</div>
+                        <div className="text-sm text-gray-500">{livreur.citeprincipale || 'غير متاح'}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          <span className="font-medium">Volume:</span>{' '}
-                          {livreur.VolumeDisponibleParDefaut || 'N/A'}
+                          <span className="font-medium">الحجم:</span>{' '}
+                          {livreur.VolumeDisponibleParDefaut || 'غير متاح'}
                         </div>
                         <div className="text-sm text-gray-500">
-                          <span className="font-medium">Max Weight:</span>{' '}
-                          {livreur.poidsMaximale || 'N/A'}
+                          <span className="font-medium">الوزن الأقصى:</span>{' '}
+                          {livreur.poidsMaximale || 'غير متاح'}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -422,7 +422,10 @@ const LivreurManagement = () => {
                               : 'bg-gray-100 text-gray-800'
                           }`}
                         >
-                          {livreur.statutDemande || 'Unknown'}
+                          {livreur.statutDemande === 'Accepté' ? 'مقبول' : 
+                           livreur.statutDemande === 'Rejeté' ? 'مرفوض' : 
+                           livreur.statutDemande === 'En attente' ? 'في انتظار' : 
+                           'غير معروف'}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -437,14 +440,14 @@ const LivreurManagement = () => {
         )}
       </div>
 
-      {/* Accept Modal */}
+      {/* نافذة قبول الساعي */}
       {acceptModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4">Accept Livreur</h2>
+            <h2 className="text-xl font-bold mb-4">قبول الساعي</h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Cité Principale</label>
+                <label className="block text-sm font-medium text-gray-700">المدينة الرئيسية</label>
                 <input
                   type="text"
                   name="citeprincipale"
@@ -455,7 +458,7 @@ const LivreurManagement = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Volume Disponible</label>
+                <label className="block text-sm font-medium text-gray-700">الحجم المتاح</label>
                 <input
                   type="number"
                   name="VolumeDisponibleParDefaut"
@@ -466,7 +469,7 @@ const LivreurManagement = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Poids Maximale</label>
+                <label className="block text-sm font-medium text-gray-700">الوزن الأقصى</label>
                 <input
                   type="number"
                   name="poidsMaximale"
@@ -481,13 +484,13 @@ const LivreurManagement = () => {
                   onClick={() => setAcceptModal(false)}
                   className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
                 >
-                  Cancel
+                  إلغاء
                 </button>
                 <button
                   onClick={handleAccept}
                   className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                 >
-                  Confirm
+                  تأكيد
                 </button>
               </div>
             </div>

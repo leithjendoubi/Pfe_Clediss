@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { backendUrl, setIsLoggedin, getUserData ,userData } = useContext(AppContext);
+  const { backendUrl, setIsLoggedin, getUserData, userData } = useContext(AppContext);
   const [state, setState] = useState("Sign Up");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -35,7 +35,7 @@ const Login = () => {
         toast.error(otpResponse.message);
       }
     } catch (error) {
-      toast.error(error.message || "Failed to send verification OTP");
+      toast.error(error.message || "فشل إرسال رمز التحقق");
     } finally {
       setIsLoading(false);
     }
@@ -57,7 +57,7 @@ const Login = () => {
         if (data.success) {
           setIsLoggedin(true);
           await getUserData();
-          await handleVerificationProcess(); // Send OTP and redirect
+          await handleVerificationProcess();
         } else {
           toast.error(data.message);
         }
@@ -69,7 +69,7 @@ const Login = () => {
 
         if (data.success) {
           setIsLoggedin(true);
-         getUserData();
+          getUserData();
 
           if (userData && !userData.isAccountVerified) {
             await handleVerificationProcess();
@@ -88,57 +88,57 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gradient-to-br from-blue-200 to-white-400">
+    <div className="flex arabic-text items-center justify-center min-h-screen px-6 sm:px-0 bg-gradient-to-br from-blue-200 to-white-400">
       <img
-        onClick={() => navigate("/Home1")}
+        onClick={() => navigate("/")}
         src={assets.elfirma}
-        alt="logo"
+        alt="شعار"
         className="absolute left-5 sm:left-20 top-5 w-50 sm:w-60 cursor-pointer"
       />
-      <div className="bg-slate-900 p-10 rounded-lg shadow-lg w-full sm:w-96 text-indigo-300 text-sm">
-        <h2 className="text-3xl font-semibold text-white text-center mb-3">
-          {state === "Sign Up" ? "Create Account" : "Login"}
+      <div className="bg-slate-900 arabic-text p-10 rounded-lg shadow-lg w-full sm:w-96 text-indigo-300 text-sm">
+        <h2 className="text-3xl  arabic-text font-semibold text-white text-center mb-3">
+          {state === "Sign Up" ? "إنشاء حساب" : "تسجيل الدخول"}
         </h2>
 
-        <p className="text-center text-sm mb-6">
+        <p className="text-center arabic-text text-sm mb-6">
           {state === "Sign Up"
-            ? "Create your account"
-            : "Login to your account!"}
+            ? "أنشئ حسابك الخاص"
+            : "سجل الدخول إلى حسابك!"}
         </p>
 
         <form onSubmit={onSubmitHandler}>
           {state === "Sign Up" && (
             <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#333A5C]">
-              <img src={assets.person_icon} alt="person_icon" />
+              <img src={assets.person_icon} alt="أيقونة الشخص" />
               <input
                 onChange={(e) => setName(e.target.value)}
                 value={name}
                 className="bg-transparent outline-none"
                 type="text"
-                placeholder="Full Name"
+                placeholder="الاسم الكامل"
                 required
               />
             </div>
           )}
           <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#333A5C]">
-            <img src={assets.mail_icon} alt="mail_icon" />
+            <img src={assets.mail_icon} alt="أيقونة البريد" />
             <input
               onChange={(e) => setEmail(e.target.value)}
               value={email}
               className="bg-transparent outline-none"
               type="email"
-              placeholder="Email id"
+              placeholder="البريد الإلكتروني"
               required
             />
           </div>
           <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#333A5C]">
-            <img src={assets.lock_icon} alt="lock_icon" />
+            <img src={assets.lock_icon} alt="أيقونة القفل" />
             <input
               onChange={(e) => setPassword(e.target.value)}
               value={password}
               className="bg-transparent outline-none"
               type="password"
-              placeholder="Password"
+              placeholder="كلمة المرور"
               required
             />
           </div>
@@ -147,7 +147,7 @@ const Login = () => {
             onClick={() => navigate("/reset-password")}
             className="mb-4 text-indigo-500 cursor-pointer"
           >
-            Forgot password?
+            نسيت كلمة المرور؟
           </p>
 
           <button
@@ -155,28 +155,28 @@ const Login = () => {
             className="w-full py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-900 text-white font-medium"
             disabled={isLoading}
           >
-            {isLoading ? "Processing..." : state}
+            {isLoading ? "جاري المعالجة..." : state === "Sign Up" ? "إنشاء حساب" : "تسجيل الدخول"}
           </button>
         </form>
 
         {state === "Sign Up" ? (
           <p className="text-gray-400 text-center text-xs mt-4">
-            Already have an account?{" "}
+            لديك حساب بالفعل؟{" "}
             <span
               onClick={() => setState("Login")}
               className="text-blue-400 cursor-pointer underline"
             >
-              Login here
+              سجل الدخول هنا
             </span>
           </p>
         ) : (
           <p className="text-gray-400 text-center text-xs mt-4">
-            Don't have an account?{" "}
+            ليس لديك حساب؟{" "}
             <span
               onClick={() => setState("Sign Up")}
               className="text-blue-400 cursor-pointer underline"
             >
-              Sign up
+              أنشئ حسابًا
             </span>
           </p>
         )}

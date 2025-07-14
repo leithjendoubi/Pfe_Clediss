@@ -6,7 +6,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import CartPage from "../pages/products/CartPage";
 import trolleyIcon from "../assets/wired-outline-146-trolley-hover-jump.gif";
-import toDelieverIcon from "../assets/todeliever.png"; // Add this import
+import toDelieverIcon from "../assets/todeliever.png";
+import stockIcon from "../assets/stockicon1.png"; // Add this import
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -61,6 +62,14 @@ const Navbar = () => {
               />
             );
           })}
+
+          {/* Add the stock icon button */}
+          <button
+            onClick={() => navigate("/stockeur")}
+            className="p-2 rounded-full hover:bg-blue-50/50 transition-all duration-300"
+          >
+            <img src={stockIcon} alt="Stock" className="w-7 h-7" />
+          </button>
 
           {/* Add the toDeliever icon button */}
           <button

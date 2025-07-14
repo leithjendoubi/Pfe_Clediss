@@ -60,8 +60,8 @@ const ProducteurVendeur = () => {
         allSellers: allSellers.data
       });
     } catch (err) {
-      console.error('Fetch error:', err);
-      setError('Failed to load data. Please try again later.');
+      console.error('خطأ في جلب البيانات:', err);
+      setError('فشل تحميل البيانات. الرجاء المحاولة لاحقاً.');
     } finally {
       setLoading(false);
     }
@@ -77,7 +77,7 @@ const ProducteurVendeur = () => {
       await axios.put(endpoint);
       await fetchData(); // Refresh all data
     } catch (err) {
-      setError(`Failed to accept ${type} demand`);
+      setError(`فشل قبول طلب ${type === 'producer' ? 'المنتج' : 'البائع'}`);
     }
   };
 
@@ -90,7 +90,7 @@ const ProducteurVendeur = () => {
       await axios.put(endpoint);
       await fetchData(); // Refresh all data
     } catch (err) {
-      setError(`Failed to refuse ${type} demand`);
+      setError(`فشل رفض طلب ${type === 'producer' ? 'المنتج' : 'البائع'}`);
     }
   };
 
@@ -99,17 +99,17 @@ const ProducteurVendeur = () => {
       await axios.put(`http://localhost:4000/api/${type}/${id}/stop`);
       await fetchData(); // Refresh all data
     } catch (err) {
-      setError(`Failed to stop ${type} demand`);
+      setError(`فشل إيقاف ${type === 'producer' ? 'المنتج' : 'البائع'}`);
     }
   };
 
   const handleDelete = async (type, id) => {
-    if (window.confirm(`Are you sure you want to delete this ${type}?`)) {
+    if (window.confirm(`هل أنت متأكد من حذف ${type === 'producer' ? 'هذا المنتج؟' : 'هذا البائع؟'}`)) {
       try {
         await axios.delete(`http://localhost:4000/api/${type}/${id}`);
         await fetchData(); // Refresh all data
       } catch (err) {
-        setError(`Failed to delete ${type} demand`);
+        setError(`فشل حذف ${type === 'producer' ? 'المنتج' : 'البائع'}`);
       }
     }
   };
@@ -125,24 +125,24 @@ const ProducteurVendeur = () => {
     const isAllView = !showActions;
 
     return (
-      <div className="overflow-x-auto rounded-lg border border-blue-100 shadow-sm mb-8">
+      <div className="overflow-x-auto rounded-lg border border-blue-100 shadow-sm mb-8" dir="rtl">
         <table className="min-w-full divide-y divide-blue-200">
           <thead className="bg-blue-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Phone</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Address</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-blue-700 uppercase tracking-wider">الاسم</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-blue-700 uppercase tracking-wider">الهاتف</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-blue-700 uppercase tracking-wider">العنوان</th>
               {!isAllView && (
-                <th className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Storage</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-blue-700 uppercase tracking-wider">مكان التخزين</th>
               )}
-              <th className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Category</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Type</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-blue-700 uppercase tracking-wider">الفئة</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-blue-700 uppercase tracking-wider">النوع</th>
               {!isAllView && (
-                <th className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-blue-700 uppercase tracking-wider">الحالة</th>
               )}
-              <th className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Documents</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-blue-700 uppercase tracking-wider">المستندات</th>
               {showActions && (
-                <th className="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-blue-700 uppercase tracking-wider">الإجراءات</th>
               )}
             </tr>
           </thead>
@@ -164,10 +164,10 @@ const ProducteurVendeur = () => {
                   </td>
                 )}
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                  {item.categorieProduitMarche?.join(', ') || 'N/A'}
+                  {item.categorieProduitMarche?.join(', ') || 'غير متوفر'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                  {isProducer ? item.typeDesProducteurs || 'N/A' : item.typeDesVendeurs || 'N/A'}
+                  {isProducer ? item.typeDesProducteurs || 'غير متوفر' : item.typeDesVendeurs || 'غير متوفر'}
                 </td>
                 {!isAllView && (
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -175,7 +175,8 @@ const ProducteurVendeur = () => {
                       ${item.statutdemande === 'accepted' ? 'bg-green-100 text-green-800' : 
                         item.statutdemande === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
                         'bg-red-100 text-red-800'}`}>
-                      {item.statutdemande}
+                      {item.statutdemande === 'accepted' ? 'مقبول' : 
+                       item.statutdemande === 'pending' ? 'قيد الانتظار' : 'مقبول'}
                     </span>
                   </td>
                 )}
@@ -195,7 +196,7 @@ const ProducteurVendeur = () => {
                       ))}
                     </div>
                   ) : (
-                    <span className="text-gray-400">No Documents</span>
+                    <span className="text-gray-400">لا توجد مستندات</span>
                   )}
                 </td>
                 {showActions && (
@@ -206,13 +207,13 @@ const ProducteurVendeur = () => {
                           onClick={() => handleStop(type, item._id)}
                           className="px-3 py-1 bg-yellow-500 text-white text-xs rounded-md hover:bg-yellow-600 transition-colors"
                         >
-                          Stop
+                          إيقاف
                         </button>
                         <button
                           onClick={() => handleDelete(type, item._id)}
                           className="px-3 py-1 bg-red-500 text-white text-xs rounded-md hover:bg-red-600 transition-colors"
                         >
-                          Delete
+                          حذف
                         </button>
                       </div>
                     ) : (
@@ -221,13 +222,13 @@ const ProducteurVendeur = () => {
                           onClick={() => handleAccept(type, item._id)}
                           className="px-3 py-1 bg-blue-600 text-white text-xs rounded-md hover:bg-blue-700 transition-colors"
                         >
-                          Accept
+                          قبول
                         </button>
                         <button
                           onClick={() => handleRefuse(type, item._id)}
                           className="px-3 py-1 bg-gray-500 text-white text-xs rounded-md hover:bg-gray-600 transition-colors"
                         >
-                          Refuse
+                          رفض
                         </button>
                       </div>
                     )}
@@ -247,7 +248,7 @@ const ProducteurVendeur = () => {
       <div className="flex items-center justify-center min-h-screen bg-blue-50">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-lg font-medium text-blue-800">Loading data...</p>
+          <p className="mt-4 text-lg font-medium text-blue-800">جاري تحميل البيانات...</p>
         </div>
       </div>
     );
@@ -263,13 +264,13 @@ const ProducteurVendeur = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-gray-800 mb-2">Error</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">خطأ</h2>
           <p className="text-gray-600 mb-4">{error}</p>
           <button 
             onClick={fetchData}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
           >
-            Retry
+            إعادة المحاولة
           </button>
         </div>
       </div>
@@ -278,11 +279,11 @@ const ProducteurVendeur = () => {
 
   // Main render
   return (
-    <div className="min-h-screen bg-blue-50 p-4 md:p-8">
+    <div className="min-h-screen bg-blue-50 p-4 md:p-8" dir="rtl">
       <div className="max-w-7xl mx-auto">
         <header className="mb-8">
-          <h1 className="text-3xl font-bold text-blue-800">Producer & Seller Management</h1>
-          <p className="text-blue-600 mt-2">Comprehensive management dashboard</p>
+          <h1 className="text-3xl font-bold text-blue-800">إدارة المنتجين والبائعين</h1>
+          <p className="text-blue-600 mt-2">لوحة تحكم شاملة للإدارة</p>
         </header>
 
         {/* Navigation Tabs */}
@@ -292,19 +293,19 @@ const ProducteurVendeur = () => {
               onClick={() => setActiveTab('pending')}
               className={`flex-1 py-4 px-6 text-center border-b-2 font-medium text-sm ${activeTab === 'pending' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
             >
-              Pending Demands
+              الطلبات المعلقة
             </button>
             <button
               onClick={() => setActiveTab('accepted')}
               className={`flex-1 py-4 px-6 text-center border-b-2 font-medium text-sm ${activeTab === 'accepted' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
             >
-              Accepted Demands
+              الطلبات المقبولة
             </button>
             <button
               onClick={() => setActiveTab('all')}
               className={`flex-1 py-4 px-6 text-center border-b-2 font-medium text-sm ${activeTab === 'all' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
             >
-              All Records
+              جميع السجلات
             </button>
           </nav>
         </div>
@@ -314,32 +315,32 @@ const ProducteurVendeur = () => {
           <>
             <section className="mb-12">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-blue-800">Pending Producers</h2>
+                <h2 className="text-xl font-semibold text-blue-800">المنتجون المعلقون</h2>
                 <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                  {data.pendingProducers.length} pending
+                  {data.pendingProducers.length} معلقة
                 </span>
               </div>
               {data.pendingProducers.length > 0 ? (
                 <DataTable items={data.pendingProducers} type="producer" />
               ) : (
                 <div className="bg-white p-6 rounded-lg shadow-sm border border-blue-100 text-center">
-                  <p className="text-gray-500">No pending producer demands found.</p>
+                  <p className="text-gray-500">لا توجد طلبات منتجين معلقة.</p>
                 </div>
               )}
             </section>
 
             <section className="mb-12">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-blue-800">Pending Sellers</h2>
+                <h2 className="text-xl font-semibold text-blue-800">البائعون المعلقون</h2>
                 <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                  {data.pendingSellers.length} pending
+                  {data.pendingSellers.length} معلقة
                 </span>
               </div>
               {data.pendingSellers.length > 0 ? (
                 <DataTable items={data.pendingSellers} type="seller" />
               ) : (
                 <div className="bg-white p-6 rounded-lg shadow-sm border border-blue-100 text-center">
-                  <p className="text-gray-500">No pending seller demands found.</p>
+                  <p className="text-gray-500">لا توجد طلبات بائعين معلقة.</p>
                 </div>
               )}
             </section>
@@ -350,32 +351,32 @@ const ProducteurVendeur = () => {
           <>
             <section className="mb-12">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-blue-800">Active Producers</h2>
+                <h2 className="text-xl font-semibold text-blue-800">المنتجون النشطون</h2>
                 <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                  {data.acceptedProducers.length} active
+                  {data.acceptedProducers.length} نشط
                 </span>
               </div>
               {data.acceptedProducers.length > 0 ? (
                 <DataTable items={data.acceptedProducers} type="producer" />
               ) : (
                 <div className="bg-white p-6 rounded-lg shadow-sm border border-blue-100 text-center">
-                  <p className="text-gray-500">No active producers found.</p>
+                  <p className="text-gray-500">لا توجد منتجين نشطين.</p>
                 </div>
               )}
             </section>
 
             <section className="mb-12">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-blue-800">Active Sellers</h2>
+                <h2 className="text-xl font-semibold text-blue-800">البائعون النشطون</h2>
                 <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                  {data.acceptedSellers.length} active
+                  {data.acceptedSellers.length} نشط
                 </span>
               </div>
               {data.acceptedSellers.length > 0 ? (
                 <DataTable items={data.acceptedSellers} type="seller" />
               ) : (
                 <div className="bg-white p-6 rounded-lg shadow-sm border border-blue-100 text-center">
-                  <p className="text-gray-500">No active sellers found.</p>
+                  <p className="text-gray-500">لا توجد بائعين نشطين.</p>
                 </div>
               )}
             </section>
@@ -386,32 +387,32 @@ const ProducteurVendeur = () => {
           <>
             <section className="mb-12">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-blue-800">All Producers</h2>
+                <h2 className="text-xl font-semibold text-blue-800">جميع المنتجين</h2>
                 <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                  {data.allProducers.length} total
+                  {data.allProducers.length} إجمالي
                 </span>
               </div>
               {data.allProducers.length > 0 ? (
                 <DataTable items={data.allProducers} type="producer" showActions={false} />
               ) : (
                 <div className="bg-white p-6 rounded-lg shadow-sm border border-blue-100 text-center">
-                  <p className="text-gray-500">No producers found.</p>
+                  <p className="text-gray-500">لا توجد منتجين.</p>
                 </div>
               )}
             </section>
 
             <section className="mb-12">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-blue-800">All Sellers</h2>
+                <h2 className="text-xl font-semibold text-blue-800">جميع البائعين</h2>
                 <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                  {data.allSellers.length} total
+                  {data.allSellers.length} إجمالي
                 </span>
               </div>
               {data.allSellers.length > 0 ? (
                 <DataTable items={data.allSellers} type="seller" showActions={false} />
               ) : (
                 <div className="bg-white p-6 rounded-lg shadow-sm border border-blue-100 text-center">
-                  <p className="text-gray-500">No sellers found.</p>
+                  <p className="text-gray-500">لا توجد بائعين.</p>
                 </div>
               )}
             </section>

@@ -16,17 +16,17 @@ const Home1 = () => {
         {/* Right Side: Nav Links + Button */}
         <div className="flex items-center gap-8">
           <ul className="flex gap-8 font-medium text-lg">
-            <li><a href="#section0" className="hover:text-yellow-400">Welcome</a></li>
-            <li><a href="#section1" className="hover:text-yellow-400">About</a></li>
-            <li><a href="#section2" className="hover:text-yellow-400">Services</a></li>
-            <li><a href="#section3" className="hover:text-yellow-400">Clients</a></li>
-            <li><a href="#section4" className="hover:text-yellow-400">Contact</a></li>
+<li><a href="#section0" className="hover:text-yellow-400 arabic-text">مرحباً</a></li>
+<li><a href="#section1" className="hover:text-yellow-400 arabic-text">من نحن</a></li>
+<li><a href="#section2" className="hover:text-yellow-400 arabic-text">خدماتنا</a></li>
+<li><a href="#section3" className="hover:text-yellow-400 arabic-text">عملاؤنا</a></li>
+<li><a href="#section4" className="hover:text-yellow-400 arabic-text">اتصل بنا</a></li>
           </ul>
           <Link
             to="/login"
             className="border border-white rounded-full px-6 py-2 text-base hover:bg-white hover:text-black transition duration-300"
           >
-            Start →
+            هيا نبداو →
           </Link>
         </div>
       </nav>
@@ -87,7 +87,7 @@ const Home1 = () => {
               playsInline
               className="w-[960px] h-[601px] object-cover rounded"
             >
-              <source src="/Download (11).mp4" type="video/mp4" />
+              <source src="/market.mp4" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           </div>

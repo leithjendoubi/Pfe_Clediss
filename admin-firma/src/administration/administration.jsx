@@ -60,7 +60,7 @@ const ProductEditor = ({ value = [], onChange }) => {
         <Col span={12}>
           <Select
             style={{ width: '100%' }}
-            placeholder="Select a category"
+            placeholder="اختر فئة"
             value={selectedCategory}
             onChange={setSelectedCategory}
           >
@@ -73,7 +73,7 @@ const ProductEditor = ({ value = [], onChange }) => {
         </Col>
         <Col span={12}>
           <Input
-            placeholder="Enter product name"
+            placeholder="أدخل اسم المنتج"
             value={newProduct}
             onChange={(e) => setNewProduct(e.target.value)}
             onPressEnter={handleAddProduct}
@@ -88,7 +88,7 @@ const ProductEditor = ({ value = [], onChange }) => {
         disabled={!selectedCategory || !newProduct.trim()}
         style={{ marginBottom: 16 }}
       >
-        Add Product
+        إضافة منتج
       </Button>
 
       <div className="product-edit-container">
@@ -147,14 +147,14 @@ const PriceEditor = ({ value = [], onChange }) => {
       <Row gutter={16} style={{ marginBottom: 16 }}>
         <Col span={12}>
           <Input
-            placeholder="Product name"
+            placeholder="اسم المنتج"
             value={newProduct}
             onChange={(e) => setNewProduct(e.target.value)}
           />
         </Col>
         <Col span={8}>
           <InputNumber
-            placeholder="Price"
+            placeholder="السعر"
             value={newPrice}
             onChange={setNewPrice}
             style={{ width: '100%' }}
@@ -224,7 +224,7 @@ const AdministrationDashboard = () => {
       setHistoryData(historyRes.data || []);
     } catch (error) {
       console.error('API Error:', error);
-      message.error(error.response?.data?.message || 'Failed to fetch administration data');
+      message.error(error.response?.data?.message || 'فشل في جلب بيانات الإدارة');
     } finally {
       setLoading(prev => ({ ...prev, main: false, table: false }));
     }
@@ -253,12 +253,12 @@ const AdministrationDashboard = () => {
         [editingField]: values[editingField],
       });
 
-      message.success('Configuration updated successfully');
+      message.success('تم تحديث الإعدادات بنجاح');
       setIsEditModalVisible(false);
       setRefreshKey(prev => prev + 1);
     } catch (error) {
       console.error('Update Error:', error);
-      message.error(error.response?.data?.message || 'Failed to update configuration');
+      message.error(error.response?.data?.message || 'فشل في تحديث الإعدادات');
     } finally {
       setLoading(prev => ({ ...prev, update: false }));
     }
@@ -296,7 +296,7 @@ const AdministrationDashboard = () => {
         <Select
           mode="tags"
           style={{ width: '100%' }}
-          placeholder="Add items (press enter to add new item)"
+          placeholder="أضف عناصر (اضغط Enter لإضافة عنصر جديد)"
           tokenSeparators={[',']}
         />
       );
@@ -354,8 +354,8 @@ const AdministrationDashboard = () => {
             <table className="price-table">
               <thead>
                 <tr>
-                  <th>Product</th>
-                  <th>Price</th>
+                  <th>المنتج</th>
+                  <th>السعر</th>
                 </tr>
               </thead>
               <tbody>
@@ -400,7 +400,7 @@ const AdministrationDashboard = () => {
 
   const columns = [
     {
-      title: 'Date',
+      title: 'التاريخ',
       dataIndex: 'newDate',
       key: 'date',
       render: (date) => (date ? new Date(date).toLocaleString() : '-'),
@@ -408,7 +408,7 @@ const AdministrationDashboard = () => {
       defaultSortOrder: 'descend',
     },
     {
-      title: 'Market Types',
+      title: 'أنواع الأسواق',
       dataIndex: 'typeMarche',
       key: 'marketTypes',
       render: (types) => (
@@ -422,13 +422,13 @@ const AdministrationDashboard = () => {
       ),
     },
     {
-      title: 'Product Categories',
+      title: 'فئات المنتجات',
       dataIndex: 'categorieProduitMarche',
       key: 'categories',
       render: (categories) => categories?.join?.(', ') || '-',
     },
     {
-      title: 'Actions',
+      title: 'الإجراءات',
       key: 'actions',
       render: (_, record) => (
         <Button
@@ -436,7 +436,7 @@ const AdministrationDashboard = () => {
           onClick={() => setLatestData(record)}
           disabled={!record}
         >
-          View Details
+          عرض التفاصيل
         </Button>
       ),
     },
@@ -445,38 +445,38 @@ const AdministrationDashboard = () => {
   return (
     <div className="administration-container">
       <div className="header-section">
-        <h1>Market Administration</h1>
+        <h1>لوحة إدارة السوق</h1>
         <Button
           type="primary"
           icon={<ReloadOutlined />}
           onClick={() => setRefreshKey(prev => prev + 1)}
           loading={loading.main}
         >
-          Refresh Data
+          تحديث البيانات
         </Button>
       </div>
 
       <Card
-        title="Current Configuration"
+        title="الإعدادات الحالية"
         className="current-config-card"
         loading={loading.main}
       >
         {latestData ? (
           <>
-            {renderEditableField('Market Types', 'typeMarche', latestData.typeMarche)}
+            {renderEditableField('أنواع الأسواق', 'typeMarche', latestData.typeMarche)}
             <Divider />
-            {renderEditableField('Product Categories', 'categorieProduitMarche', latestData.categorieProduitMarche)}
+            {renderEditableField('فئات المنتجات', 'categorieProduitMarche', latestData.categorieProduitMarche)}
             <Divider />
-            {renderEditableField('Products', 'produits', latestData.produits)}
+            {renderEditableField('المنتجات', 'produits', latestData.produits)}
             <Divider />
-            {renderEditableField('Parkillo Prices', 'produitTarifsParkillo', latestData.produitTarifsParkillo)}
+            {renderEditableField('أسعار باركيلو', 'produitTarifsParkillo', latestData.produitTarifsParkillo)}
             <Divider />
-            {renderEditableField('Seller Types', 'typeDesVendeurs', latestData.typeDesVendeurs)}
+            {renderEditableField('أنواع البائعين', 'typeDesVendeurs', latestData.typeDesVendeurs)}
             <Divider />
-            {renderEditableField('Producer Types', 'typeDesProducteurs', latestData.typeDesProducteurs)}
+            {renderEditableField('أنواع المنتجين', 'typeDesProducteurs', latestData.typeDesProducteurs)}
           </>
         ) : (
-          <p>No configuration data available</p>
+          <p>لا توجد بيانات إعدادات متاحة</p>
         )}
       </Card>
 
@@ -492,17 +492,17 @@ const AdministrationDashboard = () => {
           showSizeChanger: false,
         }}
         locale={{
-          emptyText: 'No historical data available',
+          emptyText: 'لا توجد بيانات تاريخية متاحة',
         }}
       />
 
       <Modal
-        title={`Edit ${editingField}`}
+        title={`تعديل ${editingField}`}
         open={isEditModalVisible}
         onOk={handleUpdate}
         onCancel={() => setIsEditModalVisible(false)}
-        okText="Update"
-        cancelText="Cancel"
+        okText="تحديث"
+        cancelText="إلغاء"
         confirmLoading={loading.update}
         width={editingField === 'produits' ? 800 : 600}
       >
@@ -513,7 +513,7 @@ const AdministrationDashboard = () => {
             rules={[
               {
                 required: true,
-                message: `Please input ${editingField}`,
+                message: `الرجاء إدخال ${editingField}`,
               },
             ]}
           >
