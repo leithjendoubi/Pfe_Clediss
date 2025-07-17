@@ -94,7 +94,7 @@ export const WELCOME_TEMPLATE = `
       <p style="font-size:16px; color: #cbd5e1;">نحن متحمسون لانضمامك إلينا 🎉</p>
 
       <p style="font-size:15px; color:#cbd5e1; margin-top:20px;">
-        مرحبًا بك في موقع elyséedev. تم إنشاء حسابك باستخدام البريد الإلكتروني:
+        مرحبًا بك في موقع فيرمة تم إنشاء حسابك باستخدام البريد الإلكتروني:
       </p>
       <p style="font-size:17px; font-weight:bold; color:#ffffff; margin-top:5px;">{{email}}</p>
 
